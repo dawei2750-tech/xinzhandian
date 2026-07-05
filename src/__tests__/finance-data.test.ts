@@ -1,15 +1,18 @@
 import {
+  advantages,
   benefits,
+  brand,
   coins,
   featureCards,
   fixedSavingsRates,
   flexibleSavingsRates,
+  heroContent,
   marketItems,
+  mobileDrawerItems,
   mobileNavItems,
   navItems,
-  platformStats,
+  promoBanners,
   quickActions,
-  summaryTiles,
 } from "@/constants/finance";
 
 describe("finance constants", () => {
@@ -18,26 +21,50 @@ describe("finance constants", () => {
       "首页", "交易", "矿池", "理财", "盲盒", "邀请", "更多",
     ]);
     expect(mobileNavItems).toHaveLength(5);
-    expect(marketItems).toHaveLength(7);
+    expect(marketItems.map((item) => item.label)).toEqual(expect.arrayContaining([
+      "✓ 链上公开透明",
+      "✓ 多重签名资产管理",
+      "✓ 实时链上数据",
+      "✓ 多链支持",
+      "✓ 智能合约自动执行",
+    ]));
   });
 
-  it("contains every dashboard card and coin", () => {
-    expect(platformStats).toHaveLength(4);
-    expect(featureCards).toHaveLength(4);
+  it("contains the revised shared homepage content", () => {
+    expect(brand.wallet).toBe("ReceiveVoucher");
+    expect(heroContent.title).toBe("Blockchain Savings");
+    expect(featureCards.map((card) => card.title)).not.toContain("定期储蓄计划");
+    expect(featureCards).toHaveLength(3);
     expect(coins.map((coin) => coin.symbol)).toEqual([
       "BTC", "ETH", "BNB", "XRP", "DOGE", "DOT",
     ]);
     expect(benefits).toHaveLength(4);
-    expect(summaryTiles).toHaveLength(4);
     expect(quickActions).toHaveLength(4);
   });
 
-  it("contains the complete fixed and flexible savings ranges", () => {
+  it("contains daily-only fixed and flexible savings ranges", () => {
     expect(fixedSavingsRates).toHaveLength(9);
-    expect(fixedSavingsRates.at(0)?.annualRate).toBe("620.50%");
-    expect(fixedSavingsRates.at(-1)?.annualRate).toBe("4015.00%");
     expect(flexibleSavingsRates).toHaveLength(9);
-    expect(flexibleSavingsRates.at(0)?.annualRate).toBe("255.50%");
-    expect(flexibleSavingsRates.at(-1)?.annualRate).toBe("985.50%");
+    expect(fixedSavingsRates.at(0)).toEqual({ amount: "1 - 49,999", dailyRate: "1.70%" });
+    expect(flexibleSavingsRates.at(-1)).toEqual({ amount: "OVER 5,000,000", dailyRate: "2.70%" });
+    expect(fixedSavingsRates.every((rate) => !("annualRate" in rate))).toBe(true);
+    expect(flexibleSavingsRates.every((rate) => !("annualRate" in rate))).toBe(true);
+  });
+
+  it("contains complete shared mobile, banner, and advantages content", () => {
+    expect(mobileDrawerItems.map((item) => item.label)).toEqual([
+      "首页", "矿池数据", "贷款", "文档", "语言",
+    ]);
+    expect(mobileDrawerItems.map((item) => item.href)).toEqual([
+      "/", "/pool", "/loan", "/docs", "#language",
+    ]);
+    expect(promoBanners).toHaveLength(3);
+    expect(promoBanners.every((banner) => banner.title && banner.description)).toBe(true);
+    expect(advantages).toHaveLength(11);
+    expect(advantages.map((item) => item.id)).toEqual([
+      "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11",
+    ]);
+    expect(advantages.find((item) => item.id === "03")?.title).toBe("如何在钱包中质押 USDC？");
+    expect(advantages.every((item) => item.body.length > 0 && item.body.every(Boolean))).toBe(true);
   });
 });

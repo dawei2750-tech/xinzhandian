@@ -1,16 +1,17 @@
 import type {
+  AdvantageItem,
   Benefit,
   Coin,
   FeatureCard,
   MarketItem,
+  MobileDrawerItem,
   NavItem,
-  PlatformStat,
+  PromoBanner,
   QuickAction,
   SavingsRate,
-  SummaryTile,
 } from "@/types/finance";
 
-export const brand = { name: "HB Chain", mark: "HB", language: "简体中文", wallet: "连接钱包" } as const;
+export const brand = { name: "HB Chain", mark: "HB", language: "简体中文", wallet: "ReceiveVoucher" } as const;
 export const uiText = {
   mainNavigation: "主导航",
   mobileNavigation: "移动端导航",
@@ -39,10 +40,27 @@ export const marketItems: MarketItem[] = [
   { label: "市值", value: "2.16万亿美元", change: "1.49%", trend: "up" },
   { label: "24小时卷", value: "649.4亿美元", change: "30.59%", trend: "down" },
   { label: "市场主导", value: "BTC: 60.1%  ETH: 11.4%" }, { label: "Gas", value: "1.24 Gwei" },
+  { label: "✓ 链上公开透明" }, { label: "✓ 多重签名资产管理" },
+  { label: "✓ 实时链上数据" }, { label: "✓ 多链支持" },
+  { label: "✓ 智能合约自动执行" },
+];
+
+export const mobileDrawerItems: MobileDrawerItem[] = [
+  { label: "首页", href: "/", icon: "home" },
+  { label: "矿池数据", href: "/pool", icon: "mining" },
+  { label: "贷款", href: "/loan", icon: "coins" },
+  { label: "文档", href: "/docs", icon: "contract" },
+  { label: "语言", href: "#language", icon: "globe" },
+];
+
+export const promoBanners: PromoBanner[] = [
+  { eyebrow: "BLOCKCHAIN SAVINGS", title: "数字资产新方式", description: "多链储蓄与链上透明数据", icon: "ethereum", tone: "purple" },
+  { eyebrow: "LIQUIDITY SAVINGS", title: "灵活储蓄赚取 USDC", description: "随存随取，收益清晰可见", icon: "usdc", tone: "cyan" },
+  { eyebrow: "SMART CONTRACT", title: "自动执行链上计划", description: "合约驱动，多重签名资产管理", icon: "contract", tone: "orange" },
 ];
 
 export const heroContent = {
-  eyebrow: "安全 · 高效 · 透明", titlePrefix: "开启你的", titleAccent: "Web3", titleSuffix: "时代",
+  eyebrow: "安全 · 高效 · 透明", title: "Blockchain Savings",
   description: "多链支持 · 智能合约保障 · 资产安全可追溯",
   primaryAction: "立即体验", secondaryAction: "了解更多",
   carouselDots: 5,
@@ -53,22 +71,6 @@ export const heroContent = {
   ],
 } as const;
 
-export const platformHeading = "平台实时数据";
-export const platformPeriod = "24H";
-export const platformStats: PlatformStat[] = [
-  { label: "总交易量", value: "$3,592,466,059", change: "+8.24%", icon: "volume", tone: "blue" },
-  { label: "未平仓合约", value: "$2,508,807,087", change: "+6.37%", icon: "briefcase", tone: "green" },
-  { label: "用户总数", value: "708,692", change: "+5.21%", icon: "users", tone: "purple" },
-  { label: "24H交易量", value: "$126,890,420", change: "+9.18%", icon: "chart", tone: "blue" },
-];
-
-export const summaryTiles: SummaryTile[] = [
-  { label: "总交易量", value: "$3.59B", icon: "briefcase", tone: "green" },
-  { label: "未平仓合约", value: "$2.51B", icon: "vault", tone: "orange" },
-  { label: "用户总数", value: "708,692", icon: "users", tone: "purple" },
-  { label: "24H交易量", value: "$126.89M", icon: "chart", tone: "blue" },
-];
-
 export const quickActions: QuickAction[] = [
   { title: "盲盒抽奖", description: "100%中奖", icon: "gift", tone: "orange" },
   { title: "邀请好友", description: "最高返佣 15%", icon: "users", tone: "blue" },
@@ -77,7 +79,6 @@ export const quickActions: QuickAction[] = [
 ];
 
 export const featureCards: FeatureCard[] = [
-  { title: "定期储蓄计划", subtitle: "最高年化", value: "11.00%", button: "立即存入", icon: "vault", tone: "orange" },
   { title: "盲盒抽奖", subtitle: "100%中奖", valueLabel: "最高奖励", value: "8888 USDC", button: "去抽奖", icon: "gift", tone: "purple" },
   { title: "邀请好友", subtitle: "享高额返佣", valueLabel: "最高返佣", value: "15%", button: "立即邀请", icon: "users", tone: "blue" },
   { title: "流动性挖矿", subtitle: "提供流动性", valueLabel: "赚取", value: "平台通证", button: "立即参与", icon: "coins", tone: "orange" },
@@ -94,30 +95,101 @@ export const coins: Coin[] = [
   { symbol: "DOT", name: "波卡币", price: "$0.8734", change: "+2.70%", volume: "$8.73M", icon: "dot", tone: "purple", trend: [7,5,10,8,15,13,20,26] },
 ];
 
-export const tableColumns = ["存款金额（USDC）", "每日利率", "年化利率"] as const;
+export const tableColumns = ["存款金额（USDC）", "每日利率（Daily Interest）"] as const;
 export const savingsTables = {
   fixed: { title: "定期储蓄利率表", note: "固定期限" },
   flexible: { title: "灵活储蓄利率表", note: "随存随取" },
 } as const;
 export const fixedSavingsRates: SavingsRate[] = [
-  ["1 - 49,999", "1.70%", "620.50%"], ["50,000 - 99,999", "2.20%", "803.00%"],
-  ["100,000 - 299,999", "2.60%", "949.00%"], ["300,000 - 499,999", "3.00%", "1095.00%"],
-  ["500,000 - 999,999", "3.40%", "1241.00%"], ["1,000,000 - 2,999,999", "3.80%", "1387.00%"],
-  ["3,000,000 - 4,999,999", "4.50%", "1642.50%"], ["5,000,000 - 9,999,999", "5.80%", "2117.00%"],
-  ["OVER 10,000,000", "11.00%", "4015.00%"],
-].map(([amount, dailyRate, annualRate]) => ({ amount, dailyRate, annualRate }));
+  ["1 - 49,999", "1.70%"], ["50,000 - 99,999", "2.20%"],
+  ["100,000 - 299,999", "2.60%"], ["300,000 - 499,999", "3.00%"],
+  ["500,000 - 999,999", "3.40%"], ["1,000,000 - 2,999,999", "3.80%"],
+  ["3,000,000 - 4,999,999", "4.50%"], ["5,000,000 - 9,999,999", "5.80%"],
+  ["OVER 10,000,000", "11.00%"],
+].map(([amount, dailyRate]) => ({ amount, dailyRate }));
 
 export const flexibleSavingsRates: SavingsRate[] = [
-  ["1 - 9,999", "0.70%", "255.50%"], ["10,000 - 49,999", "0.90%", "328.50%"],
-  ["50,000 - 99,999", "1.10%", "401.50%"], ["100,000 - 299,999", "1.30%", "474.50%"],
-  ["300,000 - 499,999", "1.50%", "547.50%"], ["500,000 - 999,999", "1.70%", "620.50%"],
-  ["1,000,000 - 2,999,999", "1.90%", "693.50%"], ["3,000,000 - 4,999,999", "2.10%", "766.50%"],
-  ["OVER 5,000,000", "2.70%", "985.50%"],
-].map(([amount, dailyRate, annualRate]) => ({ amount, dailyRate, annualRate }));
+  ["1 - 9,999", "0.70%"], ["10,000 - 49,999", "0.90%"],
+  ["50,000 - 99,999", "1.10%"], ["100,000 - 299,999", "1.30%"],
+  ["300,000 - 499,999", "1.50%"], ["500,000 - 999,999", "1.70%"],
+  ["1,000,000 - 2,999,999", "1.90%"], ["3,000,000 - 4,999,999", "2.10%"],
+  ["OVER 5,000,000", "2.70%"],
+].map(([amount, dailyRate]) => ({ amount, dailyRate }));
 
 export const benefits: Benefit[] = [
   { title: "安全可靠", description: "多重审计，资金安全保障", icon: "shield", tone: "blue" },
   { title: "智能合约", description: "公开透明，链上可验证", icon: "contract", tone: "purple" },
   { title: "多链支持", description: "支持 12+ 主流公链", icon: "chain", tone: "purple" },
   { title: "全球合规", description: "合规运营，全球服务", icon: "globe", tone: "green" },
+];
+
+export const advantages: AdvantageItem[] = [
+  {
+    id: "01",
+    title: "福利活动",
+    body: [
+      "尊贵的客户，感谢您一直以来对 HB Chain 的信任与支持。为了回馈用户，我们将持续推出专属福利和奖励计划。",
+      "每位成功参与区块链储蓄计划的新用户都可获得专属奖励，并可通过在线支持了解主流加密货币兑换为 USDC 的流程，以便存入个人钱包并继续参与储蓄。",
+      "如需了解更多详情，请联系在线支持。",
+    ],
+  },
+  {
+    id: "02",
+    title: "HB Chain 现金服务",
+    body: ["鉴于不同地区的货币兑换限制，平台可提供无佣金的现金与加密货币兑换咨询，包括现金兑换及通过银行电汇购买加密货币的流程支持。"],
+  },
+  {
+    id: "03",
+    title: "如何在钱包中质押 USDC？",
+    body: [
+      "1. 点击“质押”进入质押页面，选择您想要质押的期限和金额。",
+      "2. 使用计算器图标预估对应利息。",
+      "3. 提交质押申请后，在 10 分钟内联系在线支持确认申请状态。",
+      "4. 活动奖励规则以页面最新说明及在线支持确认为准。",
+    ],
+  },
+  {
+    id: "04",
+    title: "如何邀请朋友加入 HB Chain？",
+    body: ["从页面菜单获取专属邀请链接。朋友通过该链接进入后，邀请奖励将按当前活动规则计算，具体比例以页面展示为准。"],
+  },
+  {
+    id: "05",
+    title: "什么是 HB Chain？",
+    body: ["存款者可为链上流动性市场提供资产，并根据对应计划获得收益。系统基于公开区块链运行，相关操作可追踪、可验证并可审计。"],
+  },
+  {
+    id: "06",
+    title: "HB Chain 的工作原理是什么？",
+    body: ["HB Chain 通过部署在区块链上的智能合约管理储蓄与流动性计划。参与者可将支持的资产存入对应池中，合约按照公开规则执行并记录链上结果。"],
+  },
+  {
+    id: "07",
+    title: "HB Chain 安全可靠吗？",
+    body: ["平台通过合约审查、多重签名资产管理和持续安全检查降低风险。区块链与智能合约仍存在技术和市场风险，参与前应阅读规则并独立判断。"],
+  },
+  {
+    id: "08",
+    title: "HB Chain 的发展历程",
+    body: ["HB Chain 聚焦于建立透明、开放的链上金融体验，并持续完善多链支持、数据验证、储蓄产品和用户操作流程。"],
+  },
+  {
+    id: "09",
+    title: "HB Chain 储蓄计划",
+    body: ["参与储蓄计划前，钱包需准备计划要求的资产与必要网络费用。具体资产、期限、收益与退出规则以当前页面和合约信息为准。"],
+  },
+  {
+    id: "10",
+    title: "参与者须知",
+    body: [
+      "灵活计划允许资产保留较高流动性；固定期限计划需要选择对应期限，并可能提供不同的收益规则。",
+      "资产进入计划后，收益计算、申购和退出条件以页面及智能合约展示为准。",
+      "参与者应核对钱包网络、资产类型、授权内容和链上交易状态。",
+    ],
+  },
+  {
+    id: "11",
+    title: "如何加入？",
+    body: ["通过钱包访问页面，点击 ReceiveVoucher 进入授权流程。确认钱包网络和授权内容后，根据页面提示完成链上操作，即可参与对应储蓄计划。"],
+  },
 ];

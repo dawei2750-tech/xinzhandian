@@ -15,3 +15,18 @@ button { font: inherit; }
 .brand-text { background-image: theme(backgroundImage.brand-gradient); background-clip: text; color: transparent; }
 .primary-button { background-image: theme(backgroundImage.button-gradient); box-shadow: theme(boxShadow.glow); }
 .hero-visual { background-image: theme(backgroundImage.hero-glow); }
+.market-ticker-viewport { overflow: hidden; }
+.market-ticker-marquee { animation: market-ticker-scroll 48s linear infinite; }
+@keyframes market-ticker-scroll { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .market-ticker-viewport { overflow-x: auto; }
+  .market-ticker-marquee { animation: none; }
+}
+.promo-carousel-track { animation: promo-carousel-scroll 18s ease-in-out infinite; }
+@keyframes promo-carousel-scroll {
+  0%, 28% { transform: translateX(0); }
+  34%, 62% { transform: translateX(-33.333333%); }
+  68%, 94% { transform: translateX(-66.666667%); }
+  100% { transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) { .promo-carousel-track { animation: none; } }
