@@ -1,0 +1,33 @@
+{
+  "name": "hb-chain-finance",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@next/swc-win32-x64-msvc": "16.2.10",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "latest",
+    "@testing-library/jest-dom": "latest",
+    "@testing-library/react": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "jsdom": "latest",
+    "tailwindcss": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  }
+}

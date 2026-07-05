@@ -1,0 +1,17 @@
+@config "../../tailwind.config.ts";
+@import "tailwindcss";
+
+* { box-sizing: border-box; }
+html { background: theme(colors.canvas); scroll-behavior: smooth; }
+body { margin: 0; min-height: 100vh; overflow-x: hidden; background-image: theme(backgroundImage.app-canvas); color: theme(colors.ink); font-family: theme(fontFamily.sans); }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; }
+.scrollbar-none { scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.page-grid::before { content: ""; position: fixed; inset: 0; pointer-events: none; background-image: theme(backgroundImage.grid); background-size: theme(backgroundSize.grid); mask-image: linear-gradient(to bottom, black, transparent 70%); }
+.page-grid::after { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .2; background-image: theme(backgroundImage.stars); background-size: theme(backgroundSize.stars); }
+.panel { border: 1px solid theme(colors.line); border-radius: theme(borderRadius.panel); background: color-mix(in srgb, theme(colors.surface) 91%, transparent); box-shadow: theme(boxShadow.panel); transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease; }
+.panel-hover:hover { border-color: theme(colors.line-bright); box-shadow: theme(boxShadow.glow); transform: translateY(-2px); }
+.brand-text { background-image: theme(backgroundImage.brand-gradient); background-clip: text; color: transparent; }
+.primary-button { background-image: theme(backgroundImage.button-gradient); box-shadow: theme(boxShadow.glow); }
+.hero-visual { background-image: theme(backgroundImage.hero-glow); }
