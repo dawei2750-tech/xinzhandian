@@ -35,5 +35,13 @@ describe("finance home", () => {
     expect(document.querySelectorAll(".overflow-x-auto").length).toBeGreaterThanOrEqual(4);
     expect(screen.getByTestId("hero-dots")).toBeInTheDocument();
     expect(screen.getAllByTestId("rate-illustration")).toHaveLength(2);
+    expect(document.querySelector('[data-section="hero"] section')).toHaveClass("lg:min-h-72");
+    expect(screen.getByTestId("feature-grid")).toHaveClass("lg:grid-cols-4");
+    expect(screen.getByTestId("feature-grid").firstElementChild).toHaveClass("lg:min-h-48");
+    expect(screen.getByTestId("platform-stats")).toHaveClass("lg:p-4");
+    expect(screen.getByTestId("coin-grid")).toHaveClass("2xl:text-xs");
+    expect(screen.getAllByTestId("rate-table")[0]).toHaveClass("lg:text-[0.8125rem]");
+    expect(screen.getByTestId("quick-actions").firstElementChild).toHaveClass("lg:p-3");
+    expect(screen.getByTestId("benefits-bar").firstElementChild).toHaveClass("lg:p-4");
   });
 });
