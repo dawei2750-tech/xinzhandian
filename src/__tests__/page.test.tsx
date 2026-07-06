@@ -79,7 +79,8 @@ describe("finance home", () => {
   it("renders three themed banners and complete advantages in both layouts", () => {
     render(<Home />);
 
-    expect(screen.getAllByTestId("promo-banner-slide")).toHaveLength(3);
+    expect(screen.getAllByTestId("promo-banner-slide")).toHaveLength(4);
+    expect(screen.getByRole("img", { name: "Savings Plan Reward · 3 million ETH" })).toBeInTheDocument();
     for (const layout of [screen.getByTestId("desktop-home"), screen.getByTestId("mobile-home")]) {
       const advantagesPanel = within(layout).getByTestId("advantages-panel");
       expect(within(advantagesPanel).getAllByRole("button")).toHaveLength(11);

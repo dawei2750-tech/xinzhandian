@@ -24,9 +24,10 @@ button { font: inherit; }
 }
 .promo-carousel-track { animation: promo-carousel-scroll 18s ease-in-out infinite; }
 @keyframes promo-carousel-scroll {
-  0%, 28% { transform: translateX(0); }
-  34%, 62% { transform: translateX(-33.333333%); }
-  68%, 94% { transform: translateX(-66.666667%); }
+  0%, 20% { transform: translateX(0); }
+  25%, 45% { transform: translateX(-25%); }
+  50%, 70% { transform: translateX(-50%); }
+  75%, 95% { transform: translateX(-75%); }
   100% { transform: translateX(0); }
 }
 @media (prefers-reduced-motion: reduce) { .promo-carousel-track { animation: none; } }

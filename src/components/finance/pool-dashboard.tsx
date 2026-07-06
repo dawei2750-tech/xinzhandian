@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GlowIcon } from "@/components/ui/glow-icon";
 
 const tabs = ["矿池数据", "计划", "账户", "转移"] as const;
@@ -8,6 +8,11 @@ type PoolTab = (typeof tabs)[number];
 
 export function PoolDashboard() {
   const [activeTab, setActiveTab] = useState<PoolTab>("矿池数据");
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("tab") !== "account") return;
+    const timer = window.setTimeout(() => setActiveTab("账户"), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
   return <section className="panel overflow-hidden">
     <div role="tablist" aria-label="矿池功能" className="scrollbar-none flex overflow-x-auto border-b border-line p-2">
       {tabs.map((tab) => <button key={tab} role="tab" aria-selected={activeTab === tab} onClick={() => setActiveTab(tab)} className={`min-w-24 flex-1 rounded-control px-4 py-3 text-sm font-medium ${activeTab === tab ? "bg-brand-gradient text-ink shadow-glow" : "text-muted"}`}>{tab}</button>)}

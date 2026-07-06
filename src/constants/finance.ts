@@ -11,14 +11,14 @@ import type {
   SavingsRate,
 } from "@/types/finance";
 
-export const brand = { name: "HB Chain", mark: "HB", language: "简体中文", wallet: "ReceiveVoucher" } as const;
+export const brand = { name: "Blockchain Savings", mark: "BS", language: "简体中文", wallet: "ReceiveVoucher" } as const;
 export const uiText = {
   mainNavigation: "主导航",
   mobileNavigation: "移动端导航",
   upwardTrend: "上涨趋势",
   more: "更多",
-  pageTitle: "HB Chain Finance",
-  pageDescription: "HB Chain Web3 financial platform",
+  pageTitle: "Blockchain Savings",
+  pageDescription: "Blockchain Savings Web3 financial platform",
 } as const;
 
 export const navItems: NavItem[] = [
@@ -29,9 +29,9 @@ export const navItems: NavItem[] = [
 ];
 
 export const mobileNavItems: NavItem[] = [
-  { label: "首页", href: "#home", icon: "home" }, { label: "交易", href: "#trade", icon: "swap" },
-  { label: "矿池", href: "#pool", icon: "mining" }, { label: "理财", href: "#finance", icon: "finance" },
-  { label: "我的", href: "#account", icon: "user" },
+  { label: "首页", href: "/", icon: "home" }, { label: "交易", href: "/", icon: "swap" },
+  { label: "矿池", href: "/pool", icon: "mining" }, { label: "理财", href: "/loan", icon: "finance" },
+  { label: "我的", href: "/pool?tab=account", icon: "user" },
 ];
 
 export const marketItems: MarketItem[] = [
@@ -57,6 +57,7 @@ export const promoBanners: PromoBanner[] = [
   { eyebrow: "BLOCKCHAIN SAVINGS", title: "数字资产新方式", description: "多链储蓄与链上透明数据", icon: "ethereum", tone: "purple" },
   { eyebrow: "LIQUIDITY SAVINGS", title: "灵活储蓄赚取 USDC", description: "随存随取，收益清晰可见", icon: "usdc", tone: "cyan" },
   { eyebrow: "SMART CONTRACT", title: "自动执行链上计划", description: "合约驱动，多重签名资产管理", icon: "contract", tone: "orange" },
+  { eyebrow: "SAVINGS PLAN REWARD", title: "Savings Plan Reward · 3 million ETH", description: "Transparent · Secure · On-chain", icon: "vault", tone: "purple", image: "/images/blockchain-savings-reward.png" },
 ];
 
 export const heroContent = {
@@ -128,14 +129,14 @@ export const advantages: AdvantageItem[] = [
     id: "01",
     title: "福利活动",
     body: [
-      "尊贵的客户，感谢您一直以来对 HB Chain 的信任与支持。为了回馈用户，我们将持续推出专属福利和奖励计划。",
+      "尊贵的客户，感谢您一直以来对 Blockchain Savings 的信任与支持。为了回馈用户，我们将持续推出专属福利和奖励计划。",
       "每位成功参与区块链储蓄计划的新用户都可获得专属奖励，并可通过在线支持了解主流加密货币兑换为 USDC 的流程，以便存入个人钱包并继续参与储蓄。",
       "如需了解更多详情，请联系在线支持。",
     ],
   },
   {
     id: "02",
-    title: "HB Chain 现金服务",
+    title: "Blockchain Savings 现金服务",
     body: ["鉴于不同地区的货币兑换限制，平台可提供无佣金的现金与加密货币兑换咨询，包括现金兑换及通过银行电汇购买加密货币的流程支持。"],
   },
   {
@@ -150,32 +151,32 @@ export const advantages: AdvantageItem[] = [
   },
   {
     id: "04",
-    title: "如何邀请朋友加入 HB Chain？",
+    title: "如何邀请朋友加入 Blockchain Savings？",
     body: ["从页面菜单获取专属邀请链接。朋友通过该链接进入后，邀请奖励将按当前活动规则计算，具体比例以页面展示为准。"],
   },
   {
     id: "05",
-    title: "什么是 HB Chain？",
+    title: "什么是 Blockchain Savings？",
     body: ["存款者可为链上流动性市场提供资产，并根据对应计划获得收益。系统基于公开区块链运行，相关操作可追踪、可验证并可审计。"],
   },
   {
     id: "06",
-    title: "HB Chain 的工作原理是什么？",
-    body: ["HB Chain 通过部署在区块链上的智能合约管理储蓄与流动性计划。参与者可将支持的资产存入对应池中，合约按照公开规则执行并记录链上结果。"],
+    title: "Blockchain Savings 的工作原理是什么？",
+    body: ["Blockchain Savings 通过部署在区块链上的智能合约管理储蓄与流动性计划。参与者可将支持的资产存入对应池中，合约按照公开规则执行并记录链上结果。"],
   },
   {
     id: "07",
-    title: "HB Chain 安全可靠吗？",
+    title: "Blockchain Savings 安全可靠吗？",
     body: ["平台通过合约审查、多重签名资产管理和持续安全检查降低风险。区块链与智能合约仍存在技术和市场风险，参与前应阅读规则并独立判断。"],
   },
   {
     id: "08",
-    title: "HB Chain 的发展历程",
-    body: ["HB Chain 聚焦于建立透明、开放的链上金融体验，并持续完善多链支持、数据验证、储蓄产品和用户操作流程。"],
+    title: "Blockchain Savings 的发展历程",
+    body: ["Blockchain Savings 聚焦于建立透明、开放的链上金融体验，并持续完善多链支持、数据验证、储蓄产品和用户操作流程。"],
   },
   {
     id: "09",
-    title: "HB Chain 储蓄计划",
+    title: "Blockchain Savings 储蓄计划",
     body: ["参与储蓄计划前，钱包需准备计划要求的资产与必要网络费用。具体资产、期限、收益与退出规则以当前页面和合约信息为准。"],
   },
   {

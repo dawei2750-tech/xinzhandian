@@ -7,7 +7,7 @@ export function AdvantagesPanel({ anchorId, instance }: { anchorId?: string; ins
   const [openId, setOpenId] = useState<string | null>(null);
 
   return <section id={anchorId} data-testid="advantages-panel" className="panel overflow-hidden">
-    <div className="border-b border-line p-5"><p className="text-xs font-semibold tracking-[0.22em] text-warning">WHY HB CHAIN</p><h2 className="mt-2 text-2xl font-semibold">我们的优势</h2></div>
+    <div className="border-b border-line p-5"><p className="text-xs font-semibold tracking-[0.22em] text-warning">WHY BLOCKCHAIN SAVINGS</p><h2 className="mt-2 text-2xl font-semibold">我们的优势</h2></div>
     <div className="divide-y divide-line">
       {advantages.map((item) => {
         const expanded = openId === item.id;

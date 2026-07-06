@@ -9,5 +9,5 @@ export interface SavingsRate { amount: string; dailyRate: string }
 export interface Benefit { title: string; description: string; icon: IconName; tone: Tone }
 export interface QuickAction { title: string; description: string; icon: IconName; tone: Tone }
 export interface MobileDrawerItem { label: string; href: string; icon: IconName }
-export interface PromoBanner { eyebrow: string; title: string; description: string; icon: IconName; tone: Tone }
+export interface PromoBanner { eyebrow: string; title: string; description: string; icon: IconName; tone: Tone; image?: string }
 export interface AdvantageItem { id: string; title: string; body: string[] }

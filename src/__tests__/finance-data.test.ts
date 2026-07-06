@@ -31,6 +31,7 @@ describe("finance constants", () => {
   });
 
   it("contains the revised shared homepage content", () => {
+    expect(brand.name).toBe("Blockchain Savings");
     expect(brand.wallet).toBe("ReceiveVoucher");
     expect(heroContent.title).toBe("Blockchain Savings");
     expect(featureCards.map((card) => card.title)).not.toContain("定期储蓄计划");
@@ -58,7 +59,8 @@ describe("finance constants", () => {
     expect(mobileDrawerItems.map((item) => item.href)).toEqual([
       "/", "/pool", "/loan", "/docs", "#language",
     ]);
-    expect(promoBanners).toHaveLength(3);
+    expect(promoBanners).toHaveLength(4);
+    expect(promoBanners.at(-1)?.image).toBe("/images/blockchain-savings-reward.png");
     expect(promoBanners.every((banner) => banner.title && banner.description)).toBe(true);
     expect(advantages).toHaveLength(11);
     expect(advantages.map((item) => item.id)).toEqual([
@@ -66,5 +68,8 @@ describe("finance constants", () => {
     ]);
     expect(advantages.find((item) => item.id === "03")?.title).toBe("如何在钱包中质押 USDC？");
     expect(advantages.every((item) => item.body.length > 0 && item.body.every(Boolean))).toBe(true);
+    expect(mobileNavItems.map((item) => item.href)).toEqual([
+      "/", "/", "/pool", "/loan", "/pool?tab=account",
+    ]);
   });
 });
