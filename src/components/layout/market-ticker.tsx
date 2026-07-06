@@ -17,9 +17,9 @@ function TickerTrack({ duplicate = false }: { duplicate?: boolean }) {
       const value = i <= 6 ? values[i - 1] : undefined;
 
       return <div key={i} className="flex shrink-0 items-center gap-1.5">
-        <span>{i > 6 ? `\u2713 ${label}` : label}{value ? ":" : ""}</span>
-        {value && <span className="text-electric">{value}</span>}
-        {item.change && <span className={item.trend === "up" ? "text-success" : "text-danger"}>{item.trend === "up" ? "\u25b2" : "\u25bc"} {item.change}</span>}
+        <span className={i > 6 ? "ticker-proof-label" : undefined}>{i > 6 ? `\u2713 ${label}` : label}{value ? ":" : ""}</span>
+        {value && <span data-testid="ticker-value-pill" className="ticker-value-pill text-electric">{value}</span>}
+        {item.change && <span data-testid={item.trend === "up" ? "ticker-change-positive" : "ticker-change-negative"} className={`ticker-change-pill ${item.trend === "up" ? "text-success" : "text-danger"}`}>{item.trend === "up" ? "\u25b2" : "\u25bc"} {item.change}</span>}
       </div>;
     })}
   </div>;
@@ -28,8 +28,8 @@ function TickerTrack({ duplicate = false }: { duplicate?: boolean }) {
 export function MarketTicker({ variant = "top", testId }: { variant?: "top" | "highlight"; testId?: string }) {
   const highlight = variant === "highlight";
 
-  return <div data-testid={testId} className={`relative z-10 ${highlight ? "market-ticker-highlight overflow-hidden rounded-full border border-cyan/70 bg-cyan/10 shadow-cyan" : "border-b border-line bg-surface/50"}`}>
-    <div className={`market-ticker-viewport mx-auto ${highlight ? "py-2.5 text-xs font-medium text-ink" : "max-w-content py-2 text-xs text-muted"}`}>
+  return <div data-testid={testId} className={`relative z-10 ${highlight ? "market-ticker-highlight market-ticker-spotlight overflow-hidden rounded-full border border-cyan/80 bg-cyan/10 shadow-cyan" : "border-b border-line bg-surface/50"}`}>
+    <div className={`market-ticker-viewport mx-auto ${highlight ? "px-3 py-2.5 text-xs font-semibold text-ink" : "max-w-content py-2 text-xs text-muted"}`}>
       <div className="market-ticker-marquee flex w-max">
         <TickerTrack />
         <TickerTrack duplicate />

@@ -17,9 +17,15 @@ button { font: inherit; }
 .hero-visual { background-image: theme(backgroundImage.hero-glow); }
 .market-ticker-viewport { overflow: hidden; }
 .market-ticker-marquee { animation: market-ticker-scroll 48s linear infinite; }
-.market-ticker-highlight { box-shadow: inset 0 0 0 1px color-mix(in srgb, theme(colors.electric) 36%, transparent), 0 0 22px color-mix(in srgb, theme(colors.electric) 22%, transparent); }
+.market-ticker-highlight { box-shadow: inset 0 0 0 1px color-mix(in srgb, theme(colors.electric) 45%, transparent), inset 0 0 18px color-mix(in srgb, theme(colors.electric) 16%, transparent), 0 0 26px color-mix(in srgb, theme(colors.electric) 28%, transparent); }
+.market-ticker-spotlight { background-image: linear-gradient(90deg, color-mix(in srgb, theme(colors.electric) 18%, transparent), color-mix(in srgb, theme(colors.violet) 10%, transparent) 42%, color-mix(in srgb, theme(colors.warning) 12%, transparent)); }
 .market-ticker-highlight .market-ticker-viewport { max-width: 100%; }
 .market-ticker-highlight .market-ticker-track > div:first-child { color: theme(colors.warning); }
+.market-ticker-highlight .ticker-value-pill { border-radius: 999px; background: color-mix(in srgb, theme(colors.electric) 14%, transparent); padding: .08rem .35rem; text-shadow: 0 0 10px color-mix(in srgb, theme(colors.electric) 48%, transparent); }
+.market-ticker-highlight .ticker-change-pill { border-radius: 999px; padding: .08rem .35rem; font-weight: 700; }
+.market-ticker-highlight .ticker-change-pill.text-success { background: color-mix(in srgb, theme(colors.success) 14%, transparent); }
+.market-ticker-highlight .ticker-change-pill.text-danger { background: color-mix(in srgb, theme(colors.danger) 14%, transparent); }
+.market-ticker-highlight .ticker-proof-label { color: theme(colors.cyan); text-shadow: 0 0 10px color-mix(in srgb, theme(colors.cyan) 35%, transparent); }
 @keyframes market-ticker-scroll { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) {
   .market-ticker-viewport { overflow: hidden; }
