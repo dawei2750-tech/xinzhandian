@@ -26,11 +26,46 @@ button { font: inherit; }
 .market-ticker-highlight .ticker-change-pill.text-success { background: color-mix(in srgb, theme(colors.success) 14%, transparent); }
 .market-ticker-highlight .ticker-change-pill.text-danger { background: color-mix(in srgb, theme(colors.danger) 14%, transparent); }
 .market-ticker-highlight .ticker-proof-label { color: theme(colors.cyan); text-shadow: 0 0 10px color-mix(in srgb, theme(colors.cyan) 35%, transparent); }
+.market-ticker-top { box-shadow: inset 0 -1px 0 color-mix(in srgb, theme(colors.electric) 34%, transparent), inset 0 0 20px color-mix(in srgb, theme(colors.electric) 12%, transparent), 0 8px 26px color-mix(in srgb, theme(colors.electric) 12%, transparent); }
 @keyframes market-ticker-scroll { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) {
   .market-ticker-viewport { overflow: hidden; }
   .market-ticker-marquee { animation: none; }
 }
+.advantages-panel-desktop { position: relative; background: linear-gradient(180deg, color-mix(in srgb, theme(colors.surface) 96%, transparent), color-mix(in srgb, theme(colors.cyan) 7%, theme(colors.surface))); border-color: color-mix(in srgb, theme(colors.cyan) 26%, theme(colors.line)); box-shadow: theme(boxShadow.panel), inset 0 1px 0 color-mix(in srgb, theme(colors.ink) 7%, transparent); }
+.advantages-panel-desktop::before { content: ""; position: absolute; inset: -1px; pointer-events: none; background: radial-gradient(circle at 78% 8%, color-mix(in srgb, theme(colors.electric) 18%, transparent), transparent 32%); }
+.advantages-panel-head { position: sticky; top: 0; z-index: 1; border-bottom: 1px solid color-mix(in srgb, theme(colors.electric) 22%, theme(colors.line)); background: color-mix(in srgb, theme(colors.surface) 84%, transparent); backdrop-filter: blur(14px); }
+.advantages-list { position: relative; z-index: 1; padding: .35rem; }
+.advantage-item + .advantage-item { border-top: 1px solid color-mix(in srgb, theme(colors.line) 82%, transparent); }
+.advantage-row { display: flex; width: 100%; align-items: center; gap: .65rem; border-radius: .7rem; padding: .85rem .9rem; text-align: left; color: theme(colors.ink); transition: background .2s ease, box-shadow .2s ease, transform .2s ease, color .2s ease; }
+.advantage-row:hover, .advantage-row-active { background: linear-gradient(90deg, color-mix(in srgb, theme(colors.electric) 12%, transparent), color-mix(in srgb, theme(colors.violet) 8%, transparent)); box-shadow: inset 0 0 0 1px color-mix(in srgb, theme(colors.electric) 24%, transparent), 0 0 18px color-mix(in srgb, theme(colors.electric) 12%, transparent); }
+.advantage-row:hover { transform: translateX(2px); }
+.advantage-row-active { color: theme(colors.ink); }
+.advantage-number { display: grid; min-width: 2.25rem; height: 1.55rem; place-items: center; border-radius: 999px; border: 1px solid color-mix(in srgb, theme(colors.warning) 42%, transparent); background: color-mix(in srgb, theme(colors.warning) 13%, transparent); color: theme(colors.warning); font-size: .72rem; font-weight: 800; box-shadow: 0 0 14px color-mix(in srgb, theme(colors.warning) 16%, transparent); }
+.advantage-row-active .advantage-number { border-color: color-mix(in srgb, theme(colors.electric) 56%, transparent); background: color-mix(in srgb, theme(colors.electric) 16%, transparent); color: theme(colors.electric); }
+.advantage-body-active { margin: 0 .9rem .75rem 3.8rem; border-left: 1px solid color-mix(in srgb, theme(colors.electric) 35%, transparent); padding: .15rem 0 .2rem .95rem; font-size: .8125rem; line-height: 1.7; color: theme(colors.muted); text-shadow: 0 0 12px color-mix(in srgb, theme(colors.electric) 10%, transparent); }
+.advantages-panel-complete .advantages-panel-head { padding-top: .78rem; padding-bottom: .78rem; }
+.advantages-panel-complete .advantages-panel-head h2 { margin-top: .35rem; font-size: 1.38rem; }
+.advantages-panel-complete .advantages-list { padding: .2rem .28rem; }
+.advantages-panel-complete .advantage-row { min-height: 2.35rem; border-radius: .58rem; padding: .42rem .72rem; gap: .55rem; }
+.advantages-panel-complete .advantage-number { min-width: 2rem; height: 1.35rem; font-size: .68rem; }
+.advantages-panel-complete .advantage-row span:nth-child(2) { font-size: .84rem; line-height: 1.12rem; }
+#features + [data-testid="desktop-action-rail"] .space-y-3 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; }
+#features + [data-testid="desktop-action-rail"] .panel { min-height: 5.5rem; padding: .85rem; }
+#features + [data-testid="desktop-action-rail"] .panel > span:first-child { width: 2.5rem; height: 2.5rem; }
+#features + [data-testid="desktop-action-rail"] h2 { font-size: .92rem; }
+.chain-flow-card { position: relative; border-color: color-mix(in srgb, theme(colors.cyan) 28%, theme(colors.line)); background: linear-gradient(180deg, color-mix(in srgb, theme(colors.surface) 94%, transparent), color-mix(in srgb, theme(colors.violet) 8%, theme(colors.surface))); }
+.chain-flow-card-compact { background: linear-gradient(90deg, color-mix(in srgb, theme(colors.electric) 7%, transparent), color-mix(in srgb, theme(colors.surface) 92%, transparent)); }
+.chain-flow-card::after { content: ""; position: absolute; inset: auto 1rem 0; height: 1px; background: linear-gradient(90deg, transparent, theme(colors.electric), transparent); opacity: .72; animation: chain-flow-sweep 2.8s ease-in-out infinite; }
+.chain-flow-line { position: relative; }
+.chain-flow-line::before { content: ""; position: absolute; left: 9%; right: 9%; top: .72rem; height: 1px; background: linear-gradient(90deg, color-mix(in srgb, theme(colors.cyan) 22%, transparent), color-mix(in srgb, theme(colors.electric) 70%, transparent), color-mix(in srgb, theme(colors.warning) 28%, transparent)); }
+.chain-flow-node { position: relative; min-width: 0; text-align: center; }
+.chain-flow-dot { position: relative; z-index: 1; margin: 0 auto; display: block; width: 1.45rem; height: 1.45rem; border-radius: 999px; border: 1px solid color-mix(in srgb, theme(colors.electric) 62%, transparent); background: color-mix(in srgb, theme(colors.canvas) 62%, theme(colors.electric)); box-shadow: 0 0 14px color-mix(in srgb, theme(colors.electric) 24%, transparent); animation: chain-flow-pulse 1.9s ease-in-out infinite; }
+.chain-flow-mini-dot { display: inline-block; width: .48rem; height: .48rem; border-radius: 999px; background: theme(colors.electric); box-shadow: 0 0 10px color-mix(in srgb, theme(colors.electric) 40%, transparent); animation: chain-flow-pulse 1.9s ease-in-out infinite; }
+.chain-flow-chip { display: inline-flex; min-width: 0; align-items: center; gap: .32rem; overflow: hidden; border-radius: 999px; border: 1px solid color-mix(in srgb, theme(colors.cyan) 14%, transparent); background: color-mix(in srgb, theme(colors.cyan) 5%, transparent); padding: .1rem .34rem; white-space: nowrap; }
+.chain-flow-signal { text-shadow: 0 0 10px color-mix(in srgb, theme(colors.success) 45%, transparent); }
+@keyframes chain-flow-pulse { 0%, 100% { transform: scale(.86); opacity: .72; } 50% { transform: scale(1); opacity: 1; } }
+@keyframes chain-flow-sweep { 0%, 100% { transform: scaleX(.35); opacity: .35; } 50% { transform: scaleX(1); opacity: .85; } }
 .promo-carousel-track { animation: promo-carousel-scroll 18s ease-in-out infinite; }
 @keyframes promo-carousel-scroll {
   0%, 20% { transform: translateX(0); }

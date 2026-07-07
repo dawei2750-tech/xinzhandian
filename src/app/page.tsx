@@ -7,7 +7,7 @@ import { PromoCarousel } from "@/components/layout/promo-carousel";
 export default function Home() {
   return <div id="home" className="page-grid min-h-screen">
     <Header />
-    <MarketTicker />
+    <MarketTicker testId="top-market-ticker" />
     <PromoCarousel />
     <DesktopHomePage />
     <MobileHomePage />

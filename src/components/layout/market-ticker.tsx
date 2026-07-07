@@ -27,9 +27,12 @@ function TickerTrack({ duplicate = false }: { duplicate?: boolean }) {
 
 export function MarketTicker({ variant = "top", testId }: { variant?: "top" | "highlight"; testId?: string }) {
   const highlight = variant === "highlight";
+  const tickerClass = highlight
+    ? "market-ticker-highlight market-ticker-spotlight overflow-hidden rounded-full border border-cyan/80 bg-cyan/10 shadow-cyan"
+    : "market-ticker-highlight market-ticker-spotlight market-ticker-top overflow-hidden border-b border-cyan/35 bg-cyan/10";
 
-  return <div data-testid={testId} className={`relative z-10 ${highlight ? "market-ticker-highlight market-ticker-spotlight overflow-hidden rounded-full border border-cyan/80 bg-cyan/10 shadow-cyan" : "border-b border-line bg-surface/50"}`}>
-    <div className={`market-ticker-viewport mx-auto ${highlight ? "px-3 py-2.5 text-xs font-semibold text-ink" : "max-w-content py-2 text-xs text-muted"}`}>
+  return <div data-testid={testId} className={`relative z-10 ${tickerClass}`}>
+    <div className={`market-ticker-viewport mx-auto ${highlight ? "px-3 py-2.5 text-xs font-semibold text-ink" : "max-w-content py-2 text-xs font-semibold text-ink"}`}>
       <div className="market-ticker-marquee flex w-max">
         <TickerTrack />
         <TickerTrack duplicate />

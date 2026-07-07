@@ -24,7 +24,7 @@ export const uiText = {
 export const navItems: NavItem[] = [
   { label: "首页", href: "/" }, { label: "交易", href: "/" },
   { label: "矿池", href: "/pool" }, { label: "理财", href: "/loan" },
-  { label: "盲盒", href: "/#features" }, { label: "邀请", href: "/#features" },
+  { label: "盲盒", href: "/#mystery-box" }, { label: "邀请", href: "/#invite-friends" },
   { label: "更多", href: "/docs" },
 ];
 
