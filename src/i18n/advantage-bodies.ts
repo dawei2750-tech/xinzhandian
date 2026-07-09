@@ -27,7 +27,7 @@ export const advantageBodies: Record<Locale, AdvantageBodies> = {
       "After assets enter a plan, yield calculation, subscription, and exit conditions are subject to the page and smart-contract display.",
       "Participants should verify wallet network, asset type, authorization details, and on-chain transaction status.",
     ],
-    ["Visit the page with your wallet and click ReceiveVoucher to start the authorization flow. After confirming the wallet network and authorization details, follow the page prompts to complete the on-chain action."],
+    ["Visit the page with your wallet and click Start Savings to start the authorization flow. After confirming the wallet network and authorization details, follow the page prompts to complete the on-chain action."],
   ],
   "zh-CN": [
     [
@@ -53,7 +53,7 @@ export const advantageBodies: Record<Locale, AdvantageBodies> = {
       "资产进入计划后，收益计算、申购和退出条件以页面及智能合约展示为准。",
       "参与者应核对钱包网络、资产类型、授权内容和链上交易状态。",
     ],
-    ["通过钱包访问页面，点击 ReceiveVoucher 进入授权流程。确认钱包网络和授权内容后，根据页面提示完成链上操作，即可参与对应储蓄计划。"],
+    ["通过钱包访问页面，点击 Start Savings 进入授权流程。确认钱包网络和授权内容后，根据页面提示完成链上操作，即可参与对应储蓄计划。"],
   ],
   "zh-TW": [
     [
@@ -79,7 +79,7 @@ export const advantageBodies: Record<Locale, AdvantageBodies> = {
       "資產進入計畫後，收益計算、申購和退出條件以頁面及智慧合約展示為準。",
       "參與者應核對錢包網路、資產類型、授權內容和鏈上交易狀態。",
     ],
-    ["透過錢包訪問頁面，點擊 ReceiveVoucher 進入授權流程。確認錢包網路和授權內容後，根據頁面提示完成鏈上操作，即可參與對應儲蓄計畫。"],
+    ["透過錢包訪問頁面，點擊 Start Savings 進入授權流程。確認錢包網路和授權內容後，根據頁面提示完成鏈上操作，即可參與對應儲蓄計畫。"],
   ],
   ja: [
     [
@@ -105,7 +105,7 @@ export const advantageBodies: Record<Locale, AdvantageBodies> = {
       "資産がプランに入った後の収益計算、申込、退出条件はページとスマートコントラクトの表示を基準とします。",
       "参加者はウォレットのネットワーク、資産種類、承認内容、オンチェーン取引状態を確認してください。",
     ],
-    ["ウォレットでページにアクセスし、ReceiveVoucher をクリックして承認フローを開始します。ネットワークと承認内容を確認したうえで、画面の案内に従いオンチェーン操作を完了してください。"],
+    ["ウォレットでページにアクセスし、Start Savings をクリックして承認フローを開始します。ネットワークと承認内容を確認したうえで、画面の案内に従いオンチェーン操作を完了してください。"],
   ],
   ko: [
     [
@@ -131,7 +131,7 @@ export const advantageBodies: Record<Locale, AdvantageBodies> = {
       "자산이 플랜에 들어간 후 수익 계산, 신청, 종료 조건은 페이지와 스마트 계약 표시를 기준으로 합니다.",
       "참여자는 지갑 네트워크, 자산 유형, 승인 내용, 온체인 거래 상태를 확인해야 합니다.",
     ],
-    ["지갑으로 페이지에 접속한 뒤 ReceiveVoucher를 클릭해 승인 절차를 시작합니다. 지갑 네트워크와 승인 내용을 확인하고 화면 안내에 따라 온체인 작업을 완료하면 참여할 수 있습니다."],
+    ["지갑으로 페이지에 접속한 뒤 Start Savings를 클릭해 승인 절차를 시작합니다. 지갑 네트워크와 승인 내용을 확인하고 화면 안내에 따라 온체인 작업을 완료하면 참여할 수 있습니다."],
   ],
   th: [
     [
@@ -157,6 +157,6 @@ export const advantageBodies: Record<Locale, AdvantageBodies> = {
       "หลังสินทรัพย์เข้าสู่แผน การคำนวณผลตอบแทน การสมัคร และเงื่อนไขการออกให้ยึดตามหน้าเว็บและสมาร์ตคอนแทรกต์",
       "ผู้เข้าร่วมควรตรวจสอบเครือข่ายกระเป๋า ประเภทสินทรัพย์ รายละเอียดการอนุมัติ และสถานะธุรกรรมบนเชน",
     ],
-    ["เข้าใช้งานหน้าเว็บด้วยกระเป๋า แล้วคลิก ReceiveVoucher เพื่อเริ่มขั้นตอนอนุมัติ หลังยืนยันเครือข่ายและรายละเอียดการอนุมัติ ให้ทำตามคำแนะนำบนหน้าเว็บเพื่อทำธุรกรรมบนเชนให้เสร็จสิ้น"],
+    ["เข้าใช้งานหน้าเว็บด้วยกระเป๋า แล้วคลิก Start Savings เพื่อเริ่มขั้นตอนอนุมัติ หลังยืนยันเครือข่ายและรายละเอียดการอนุมัติ ให้ทำตามคำแนะนำบนหน้าเว็บเพื่อทำธุรกรรมบนเชนให้เสร็จสิ้น"],
   ],
 };

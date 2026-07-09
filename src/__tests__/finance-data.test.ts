@@ -18,7 +18,7 @@ import {
 describe("finance constants", () => {
   it("contains every navigation and market item", () => {
     expect(navItems.map((item) => item.label)).toEqual([
-      "首页", "交易", "矿池", "理财", "盲盒", "邀请", "更多",
+      "首页", "交易", "储蓄", "理财", "盲盒", "邀请", "更多",
     ]);
     expect(mobileNavItems).toHaveLength(5);
     expect(marketItems.map((item) => item.label)).toEqual(expect.arrayContaining([
@@ -32,7 +32,7 @@ describe("finance constants", () => {
 
   it("contains the revised shared homepage content", () => {
     expect(brand.name).toBe("Blockchain Savings");
-    expect(brand.wallet).toBe("ReceiveVoucher");
+    expect(brand.wallet).toBe("Start Savings");
     expect(heroContent.title).toBe("Blockchain Savings");
     expect(featureCards.map((card) => card.title)).not.toContain("定期储蓄计划");
     expect(featureCards.map((card) => card.title)).not.toContain("流动性挖矿");
@@ -40,7 +40,7 @@ describe("finance constants", () => {
     expect(coins.map((coin) => coin.symbol)).toEqual([
       "BTC", "ETH", "BNB", "XRP", "DOGE", "DOT",
     ]);
-    expect(navItems.map((item) => item.href)).toEqual(["/", "/", "/pool", "/loan", "/#mystery-box", "/#invite-friends", "/docs"]);
+    expect(navItems.map((item) => item.href)).toEqual(["/", "/#features", "/pool?tab=plan", "/loan", "/docs", "/#features", "/docs"]);
     expect(benefits).toHaveLength(4);
     expect(quickActions.map((item) => item.title)).not.toContain("流动性挖矿");
     expect(quickActions).toHaveLength(3);
@@ -57,11 +57,12 @@ describe("finance constants", () => {
 
   it("contains complete shared mobile, banner, and advantages content", () => {
     expect(mobileDrawerItems.map((item) => item.label)).toEqual([
-      "首页", "矿池数据", "贷款", "文档", "语言",
+      "首页", "储蓄计划", "贷款", "文档", "语言",
     ]);
     expect(mobileDrawerItems.map((item) => item.href)).toEqual([
-      "/", "/pool", "/loan", "/docs", "#language",
+      "/", "/pool?tab=plan", "/loan", "/docs", "#language",
     ]);
+    expect(mobileDrawerItems.map((item) => item.icon)).not.toContain("mining");
     expect(promoBanners).toHaveLength(4);
     expect(promoBanners.at(-1)?.image).toBe("/images/blockchain-savings-reward.png");
     expect(promoBanners.every((banner) => banner.title && banner.description)).toBe(true);
@@ -72,7 +73,8 @@ describe("finance constants", () => {
     expect(advantages.find((item) => item.id === "03")?.title).toBe("如何在钱包中质押 USDC？");
     expect(advantages.every((item) => item.body.length > 0 && item.body.every(Boolean))).toBe(true);
     expect(mobileNavItems.map((item) => item.href)).toEqual([
-      "/", "/", "/pool", "/loan", "/pool?tab=account",
+      "/", "/#features", "/pool?tab=plan", "/loan", "/pool?tab=plan",
     ]);
+    expect(mobileNavItems.map((item) => item.icon)).not.toContain("mining");
   });
 });

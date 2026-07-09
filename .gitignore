@@ -2,6 +2,7 @@
 /.next
 /artifacts
 /coverage
+/.vercel
 *.log
 .env*
 !.env.example

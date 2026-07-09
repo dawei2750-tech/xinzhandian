@@ -11,7 +11,7 @@ import type {
   SavingsRate,
 } from "@/types/finance";
 
-export const brand = { name: "Blockchain Savings", mark: "BS", language: "简体中文", wallet: "ReceiveVoucher" } as const;
+export const brand = { name: "Blockchain Savings", mark: "BS", language: "简体中文", wallet: "Start Savings" } as const;
 export const uiText = {
   mainNavigation: "主导航",
   mobileNavigation: "移动端导航",
@@ -22,16 +22,16 @@ export const uiText = {
 } as const;
 
 export const navItems: NavItem[] = [
-  { label: "首页", href: "/" }, { label: "交易", href: "/" },
-  { label: "矿池", href: "/pool" }, { label: "理财", href: "/loan" },
-  { label: "盲盒", href: "/#mystery-box" }, { label: "邀请", href: "/#invite-friends" },
+  { label: "首页", href: "/" }, { label: "交易", href: "/#features" },
+  { label: "储蓄", href: "/pool?tab=plan" }, { label: "理财", href: "/loan" },
+  { label: "盲盒", href: "/docs" }, { label: "邀请", href: "/#features" },
   { label: "更多", href: "/docs" },
 ];
 
 export const mobileNavItems: NavItem[] = [
-  { label: "首页", href: "/", icon: "home" }, { label: "交易", href: "/", icon: "swap" },
-  { label: "矿池", href: "/pool", icon: "mining" }, { label: "理财", href: "/loan", icon: "finance" },
-  { label: "我的", href: "/pool?tab=account", icon: "user" },
+  { label: "首页", href: "/", icon: "home" }, { label: "交易", href: "/#features", icon: "swap" },
+  { label: "储蓄", href: "/pool?tab=plan", icon: "vault" }, { label: "理财", href: "/loan", icon: "finance" },
+  { label: "我的", href: "/pool?tab=plan", icon: "user" },
 ];
 
 export const marketItems: MarketItem[] = [
@@ -47,7 +47,7 @@ export const marketItems: MarketItem[] = [
 
 export const mobileDrawerItems: MobileDrawerItem[] = [
   { label: "首页", href: "/", icon: "home" },
-  { label: "矿池数据", href: "/pool", icon: "mining" },
+  { label: "储蓄计划", href: "/pool?tab=plan", icon: "vault" },
   { label: "贷款", href: "/loan", icon: "coins" },
   { label: "文档", href: "/docs", icon: "contract" },
   { label: "语言", href: "#language", icon: "globe" },
@@ -75,15 +75,15 @@ export const heroContent = {
 export const quickActions: QuickAction[] = ([
   { title: "盲盒抽奖", description: "100%中奖", icon: "gift", tone: "orange" },
   { title: "邀请好友", description: "最高返佣 15%", icon: "users", tone: "blue" },
-  { title: "流动性挖矿", description: "赚取平台通证", icon: "chart", tone: "green" },
+  { title: "灵活储蓄", description: "随存随取", icon: "coins", tone: "green" },
   { title: "定期储蓄", description: "最高年化 11%", icon: "shield", tone: "purple" },
-] as QuickAction[]).filter((item) => item.icon !== "chart");
+] as QuickAction[]).filter((item) => item.title !== "灵活储蓄");
 
 export const featureCards: FeatureCard[] = ([
   { title: "盲盒抽奖", subtitle: "100%中奖", valueLabel: "最高奖励", value: "8888 USDC", button: "去抽奖", icon: "gift", tone: "purple" },
   { title: "邀请好友", subtitle: "享高额返佣", valueLabel: "最高返佣", value: "15%", button: "立即邀请", icon: "users", tone: "blue" },
-  { title: "流动性挖矿", subtitle: "提供流动性", valueLabel: "赚取", value: "平台通证", button: "立即参与", icon: "coins", tone: "orange" },
-] as FeatureCard[]).filter((item) => item.icon !== "coins");
+  { title: "灵活储蓄", subtitle: "随存随取", valueLabel: "每日收益", value: "档位匹配", button: "查看计划", icon: "coins", tone: "orange" },
+] as FeatureCard[]).filter((item) => item.title !== "灵活储蓄");
 
 export const coinListHeading = "热门币种";
 export const coinColumns = ["币种", "价格", "24H涨跌", "24H成交额", "趋势"] as const;
@@ -191,6 +191,6 @@ export const advantages: AdvantageItem[] = [
   {
     id: "11",
     title: "如何加入？",
-    body: ["通过钱包访问页面，点击 ReceiveVoucher 进入授权流程。确认钱包网络和授权内容后，根据页面提示完成链上操作，即可参与对应储蓄计划。"],
+    body: ["通过钱包访问页面，点击 Start Savings 查看储蓄计划。确认钱包网络、计划规则和授权内容后，根据页面提示完成链上操作，即可参与对应储蓄计划。"],
   },
 ];

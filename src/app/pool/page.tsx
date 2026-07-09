@@ -1,2 +1,2 @@
 "use client";import{PoolDashboard}from"@/components/finance/pool-dashboard";import{SecondaryPageShell}from"@/components/layout/secondary-page-shell";import{useLocale}from"@/i18n/locale-provider";import{routeCopy}from"@/i18n/route-copy";
-export default function PoolPage(){const{locale}=useLocale();const c=routeCopy[locale].pool;return <SecondaryPageShell eyebrow="ON-CHAIN POOL" title={c.title} description={c.description} icon="mining" tone="purple"><PoolDashboard/></SecondaryPageShell>}
+export default function PoolPage(){const{locale}=useLocale();const c=routeCopy[locale].pool;return <SecondaryPageShell eyebrow="SAVINGS PLANS" title={c.title} description={c.description} icon="vault" tone="purple"><PoolDashboard/></SecondaryPageShell>}

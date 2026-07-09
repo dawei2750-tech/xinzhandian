@@ -37,8 +37,8 @@ const copy: Record<Locale, FinanceCopy> = {
   en: {
     rates:{amount:"Deposit Amount (USDC)",daily:"Daily Interest",flexible:"Flexible Savings Rates",flexibleNote:"Deposit and withdraw anytime",fixed:"Fixed Savings Rates",fixedNote:"Fixed term"},
     sections:{advantages:"Our Advantages",popular:"Popular Coins",more:"More"},
-    features:[["Mystery Box","Every entry wins","Top reward","8888 USDC","Draw Now"],["Invite Friends","Premium rewards","Maximum rebate","15%","Invite Now"],["Liquidity Mining","Provide liquidity","Earn","Platform tokens","Join Now"]],
-    quick:[["Mystery Box","Every entry wins"],["Invite Friends","Up to 15% rebate"],["Liquidity Mining","Earn platform tokens"],["Fixed Savings","Daily interest up to 11%"]],
+    features:[["Mystery Box","Every entry wins","Top reward","8888 USDC","Draw Now"],["Invite Friends","Premium rewards","Maximum rebate","15%","Invite Now"],["Flexible Savings","Deposit anytime","Earn","Tiered yield","View Plans"]],
+    quick:[["Mystery Box","Every entry wins"],["Invite Friends","Up to 15% rebate"],["Flexible Savings","Earn platform tokens"],["Fixed Savings","Daily interest up to 11%"]],
     benefits:[["Secure and Reliable","Multi-layer audits protect assets"],["Smart Contracts","Transparent and verifiable on-chain"],["Multi-chain Support","Supports 12+ major networks"],["Global Operations","Compliance-oriented global service"]],
     coins:["Bitcoin","Ethereum","BNB","XRP","Dogecoin","Polkadot"], coinColumns:["Coin","Price","24H Change","24H Volume","Trend"],
     advantages:["Rewards Program","Blockchain Savings Cash Service","How to stake USDC in your wallet","How to invite friends","What is Blockchain Savings","How Blockchain Savings works","Is Blockchain Savings secure","Our development journey","Blockchain Savings plans","Participant guide","How to join"],
@@ -46,7 +46,7 @@ const copy: Record<Locale, FinanceCopy> = {
   },
   "zh-CN": {
     rates:{amount:"存款金额（USDC）",daily:"每日利率（Daily Interest）",flexible:"灵活储蓄利率表",flexibleNote:"随存随取",fixed:"定期储蓄利率表",fixedNote:"固定期限"}, sections:{advantages:"我们的优势",popular:"热门币种",more:"更多"},
-    features:[["盲盒抽奖","100%中奖","最高奖励","8888 USDC","去抽奖"],["邀请好友","享高额返佣","最高返佣","15%","立即邀请"],["流动性挖矿","提供流动性","赚取","平台通证","立即参与"]], quick:[["盲盒抽奖","100%中奖"],["邀请好友","最高返佣15%"],["流动性挖矿","赚取平台通证"],["定期储蓄","每日利率最高11%"]], benefits:[["安全可靠","多重审计，保障资产安全"],["智能合约","公开透明，链上可验证"],["多链支持","支持12+主流公链"],["全球合规","合规运营，服务全球"]], coins:["比特币","以太坊","币安币","瑞波币","狗狗币","波卡币"], coinColumns:["币种","价格","24H涨跌","24H成交额","趋势"], advantages:["福利活动","Blockchain Savings 现金服务","如何在钱包中质押 USDC","如何邀请朋友加入","什么是 Blockchain Savings","Blockchain Savings 的工作原理","Blockchain Savings 安全可靠吗","Blockchain Savings 的发展历程","Blockchain Savings 储蓄计划","参与者须知","如何加入"], advantageBody:"参与前请核对计划、支持网络、钱包授权、费用、收益和退出规则。所有操作均公开透明并可在链上验证，如需帮助请联系在线支持。",
+    features:[["盲盒抽奖","100%中奖","最高奖励","8888 USDC","去抽奖"],["邀请好友","享高额返佣","最高返佣","15%","立即邀请"],["灵活储蓄","随存随取","赚取","档位收益","查看计划"]], quick:[["盲盒抽奖","100%中奖"],["邀请好友","最高返佣15%"],["灵活储蓄","赚取档位收益"],["定期储蓄","每日利率最高11%"]], benefits:[["安全可靠","多重审计，保障资产安全"],["智能合约","公开透明，链上可验证"],["多链支持","支持12+主流公链"],["全球合规","合规运营，服务全球"]], coins:["比特币","以太坊","币安币","瑞波币","狗狗币","波卡币"], coinColumns:["币种","价格","24H涨跌","24H成交额","趋势"], advantages:["福利活动","Blockchain Savings 现金服务","如何在钱包中质押 USDC","如何邀请朋友加入","什么是 Blockchain Savings","Blockchain Savings 的工作原理","Blockchain Savings 安全可靠吗","Blockchain Savings 的发展历程","Blockchain Savings 储蓄计划","参与者须知","如何加入"], advantageBody:"参与前请核对计划、支持网络、钱包授权、费用、收益和退出规则。所有操作均公开透明并可在链上验证，如需帮助请联系在线支持。",
   },
   "zh-TW": {
     rates:{amount:"存款金額（USDC）",daily:"每日利率（Daily Interest）",flexible:"靈活儲蓄利率表",flexibleNote:"隨存隨取",fixed:"定期儲蓄利率表",fixedNote:"固定期限"}, sections:{advantages:"我們的優勢",popular:"熱門幣種",more:"更多"},

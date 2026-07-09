@@ -11,6 +11,11 @@ const flowItems = [
 
 export function DesktopFlowFooter() {
   const lanes = [flowItems, [...flowItems].reverse()];
+  const stats = [
+    ["24H", "$64.94B"],
+    ["Plans", "Live"],
+    ["Proof", "On-chain"],
+  ];
 
   return (
     <section data-testid="desktop-flow-footer" className="desktop-flow-footer panel" aria-label="On-chain data flow">
@@ -22,6 +27,11 @@ export function DesktopFlowFooter() {
       <div className="desktop-flow-copy">
         <p>LIVE ON-CHAIN ROUTING</p>
         <h2>Capital paths keep moving after every savings action.</h2>
+      </div>
+      <div className="desktop-flow-stats" aria-hidden="true">
+        {stats.map(([label, value]) => (
+          <span key={label}><b>{value}</b><small>{label}</small></span>
+        ))}
       </div>
       <div className="desktop-flow-lanes" aria-hidden="true">
         {lanes.map((lane, index) => (
