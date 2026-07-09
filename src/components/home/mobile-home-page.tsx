@@ -2,6 +2,7 @@ import { BenefitsBar } from "@/components/finance/benefits-bar";
 import { AdvantagesPanel } from "@/components/finance/advantages-panel";
 import { FeatureCards } from "@/components/finance/feature-cards";
 import { QuickActions } from "@/components/finance/quick-actions";
+import { SavingsCalculator } from "@/components/finance/savings-calculator";
 import { SavingsRateTable } from "@/components/finance/savings-rate-table";
 import { HeroSection } from "@/components/hero/hero-section";
 import { MarketTicker } from "@/components/layout/market-ticker";
@@ -19,6 +20,7 @@ export function MobileHomePage() {
         <SavingsRateTable {...savingsTables.flexible} rates={flexibleSavingsRates} tone="cyan" />
         <SavingsRateTable {...savingsTables.fixed} rates={fixedSavingsRates} tone="violet" />
       </div>
+      <SavingsCalculator testId="mobile-savings-calculator" />
       <AdvantagesPanel anchorId="advantages" instance="mobile" />
       <PopularCoins />
       <QuickActions />
