@@ -2,6 +2,7 @@
 
 import { QuickActions } from "@/components/finance/quick-actions";
 import { SavingsCalculator } from "@/components/finance/savings-calculator";
+import { SavingsPoolTeasers } from "@/components/finance/savings-pool-teasers";
 import { SavingsRateTable } from "@/components/finance/savings-rate-table";
 import { fixedSavingsRates, flexibleSavingsRates, savingsTables } from "@/constants/finance";
 import { savingsCommandCopy } from "@/i18n/finance-copy";
@@ -19,7 +20,7 @@ export function SavingsCommandCenter() {
       </div>
       <div className="savings-command-control">
         <SavingsCalculator testId="hero-savings-calculator" />
-        <div className="savings-command-metrics" aria-hidden="true">
+        <div className="savings-command-metrics hidden lg:grid" aria-hidden="true">
           {copy.metrics.map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}</strong></div>)}
         </div>
       </div>
@@ -27,7 +28,8 @@ export function SavingsCommandCenter() {
         <SavingsRateTable {...savingsTables.flexible} rates={flexibleSavingsRates} tone="cyan" />
         <SavingsRateTable {...savingsTables.fixed} rates={fixedSavingsRates} tone="violet" />
       </div>
-      <QuickActions className="command-action-strip" />
+      <SavingsPoolTeasers />
+      <QuickActions className="command-action-strip hidden lg:grid" />
     </div>
   </section>;
 }
