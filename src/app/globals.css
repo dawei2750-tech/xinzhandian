@@ -139,6 +139,54 @@ button { font: inherit; }
 .advantages-panel-complete .advantage-row { min-height: 2.35rem; border-radius: .58rem; padding: .42rem .72rem; gap: .55rem; }
 .advantages-panel-complete .advantage-number { min-width: 2rem; height: 1.35rem; font-size: .68rem; }
 .advantages-panel-complete .advantage-row span:nth-child(2) { font-size: .84rem; line-height: 1.12rem; }
+.advantages-tech-tree-panel { position: relative; overflow: visible; border-color: color-mix(in srgb, theme(colors.electric) 34%, theme(colors.line)); background: radial-gradient(circle at 50% 42%, color-mix(in srgb, theme(colors.electric) 18%, transparent), transparent 36%), linear-gradient(180deg, color-mix(in srgb, theme(colors.canvas) 94%, transparent), color-mix(in srgb, theme(colors.surface) 82%, transparent)); box-shadow: 0 0 0 1px color-mix(in srgb, theme(colors.ink) 4%, transparent) inset, 0 1.6rem 4.5rem color-mix(in srgb, black 36%, transparent), 0 0 3rem color-mix(in srgb, theme(colors.electric) 14%, transparent); }
+.advantages-tech-tree-panel::after { content: ""; position: absolute; left: 9%; right: 9%; bottom: -2rem; height: 4rem; pointer-events: none; background: radial-gradient(ellipse at 50% 0, color-mix(in srgb, theme(colors.electric) 38%, transparent), transparent 65%); filter: blur(8px); opacity: .9; }
+.advantages-tech-tree-head { position: relative; z-index: 4; border-bottom: 1px solid color-mix(in srgb, theme(colors.electric) 28%, transparent); background: linear-gradient(180deg, color-mix(in srgb, theme(colors.surface) 52%, transparent), transparent); text-align: center; }
+.advantages-tech-tree-stage { position: relative; min-height: 43rem; padding: 1rem .75rem 2rem; overflow: hidden; perspective: 900px; }
+.tech-tree-aura { position: absolute; inset: 1.5rem -18% 5rem; background: radial-gradient(circle at 50% 47%, color-mix(in srgb, theme(colors.electric) 42%, transparent), transparent 24%), radial-gradient(circle at 50% 68%, color-mix(in srgb, theme(colors.violet) 35%, transparent), transparent 24%); filter: blur(18px); opacity: .72; }
+.tech-tree-trunk { position: absolute; left: 50%; top: 4.2rem; bottom: 8rem; width: 5.5rem; transform: translateX(-50%); filter: drop-shadow(0 0 16px color-mix(in srgb, theme(colors.electric) 72%, transparent)); }
+.tech-tree-trunk::before, .tech-tree-trunk::after, .tech-tree-trunk span { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: .14rem; border-radius: 999px; background: linear-gradient(180deg, transparent, theme(colors.cyan) 12%, theme(colors.ink) 48%, theme(colors.electric) 78%, transparent); box-shadow: 0 0 1rem color-mix(in srgb, theme(colors.electric) 65%, transparent); transform-origin: bottom; }
+.tech-tree-trunk::before { transform: translateX(-50%) rotate(-5deg); }
+.tech-tree-trunk::after { transform: translateX(-50%) rotate(5deg); }
+.tech-tree-trunk span:nth-child(1) { transform: translateX(-1.1rem) rotate(-2deg); opacity: .74; }
+.tech-tree-trunk span:nth-child(2) { transform: translateX(-50%); width: .22rem; opacity: 1; }
+.tech-tree-trunk span:nth-child(3) { transform: translateX(.95rem) rotate(2deg); opacity: .74; }
+.tech-tree-branches { position: absolute; inset: 4rem .25rem 8rem; pointer-events: none; transform-style: preserve-3d; }
+.tech-tree-branches span { position: absolute; left: 50%; top: 47%; width: 33%; height: 1px; transform-origin: left center; background: linear-gradient(90deg, color-mix(in srgb, theme(colors.ink) 82%, transparent), color-mix(in srgb, theme(colors.electric) 64%, transparent), transparent); box-shadow: 0 0 12px color-mix(in srgb, theme(colors.cyan) 42%, transparent); }
+.tech-tree-branches span:nth-child(odd) { transform: rotate(calc(-62deg + var(--i, 0deg))) scaleX(.84); }
+.tech-tree-branches span:nth-child(even) { transform: rotate(calc(24deg + var(--i, 0deg))) scaleX(.78); }
+.tech-tree-branches span:nth-child(1) { top: 17%; --i: 0deg; width: 21%; }
+.tech-tree-branches span:nth-child(2) { top: 17%; --i: 15deg; width: 21%; }
+.tech-tree-branches span:nth-child(3) { top: 28%; --i: -8deg; width: 34%; }
+.tech-tree-branches span:nth-child(4) { top: 28%; --i: 0deg; width: 34%; }
+.tech-tree-branches span:nth-child(5) { top: 40%; --i: -17deg; width: 39%; }
+.tech-tree-branches span:nth-child(6) { top: 40%; --i: 12deg; width: 39%; }
+.tech-tree-branches span:nth-child(7) { top: 55%; --i: -22deg; width: 34%; }
+.tech-tree-branches span:nth-child(8) { top: 55%; --i: 20deg; width: 34%; }
+.tech-tree-branches span:nth-child(9) { top: 67%; --i: -12deg; width: 28%; }
+.tech-tree-branches span:nth-child(10) { top: 67%; --i: 10deg; width: 28%; }
+.tech-tree-branches span:nth-child(n+11) { top: 80%; width: 18%; opacity: .72; }
+.tech-tree-canopy { position: absolute; inset: 0; z-index: 2; }
+.tech-tree-node { position: absolute; display: grid; min-width: 5.8rem; max-width: 8.7rem; min-height: 3.35rem; transform: translate(-50%, -50%); align-content: center; gap: .08rem; border: 1px solid color-mix(in srgb, theme(colors.electric) 42%, theme(colors.line)); border-radius: .7rem; background: linear-gradient(180deg, color-mix(in srgb, theme(colors.surface) 84%, transparent), color-mix(in srgb, theme(colors.canvas) 72%, transparent)); padding: .42rem .48rem; color: theme(colors.ink); text-align: center; box-shadow: inset 0 0 0 1px color-mix(in srgb, theme(colors.ink) 5%, transparent), 0 0 1.1rem color-mix(in srgb, theme(colors.electric) 17%, transparent); backdrop-filter: blur(14px); transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease, background .22s ease; }
+.tech-tree-node::before { content: ""; position: absolute; left: 50%; top: -.42rem; width: .62rem; height: .62rem; transform: translateX(-50%); border-radius: 999px; border: 1px solid color-mix(in srgb, theme(colors.cyan) 70%, transparent); background: theme(colors.canvas); box-shadow: 0 0 1rem color-mix(in srgb, theme(colors.electric) 56%, transparent); }
+.tech-tree-node:hover, .tech-tree-node-active { transform: translate(-50%, -50%) scale(1.08); border-color: color-mix(in srgb, theme(colors.cyan) 78%, transparent); background: linear-gradient(180deg, color-mix(in srgb, theme(colors.electric) 24%, theme(colors.surface)), color-mix(in srgb, theme(colors.canvas) 74%, transparent)); box-shadow: inset 0 0 0 1px color-mix(in srgb, theme(colors.ink) 8%, transparent), 0 0 1.7rem color-mix(in srgb, theme(colors.electric) 42%, transparent), 0 .8rem 1.7rem color-mix(in srgb, black 28%, transparent); z-index: 5; }
+.tech-tree-node-id { color: theme(colors.ink); font-size: 1rem; font-weight: 900; line-height: 1; text-shadow: 0 0 13px color-mix(in srgb, theme(colors.cyan) 68%, transparent); }
+.tech-tree-node-title { display: -webkit-box; overflow: hidden; color: theme(colors.ink); font-size: .63rem; font-weight: 800; line-height: .78rem; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.tech-tree-detail { position: absolute; left: .8rem; right: .8rem; bottom: 1.2rem; z-index: 6; border: 1px solid color-mix(in srgb, theme(colors.cyan) 62%, theme(colors.line)); border-radius: .9rem; background: linear-gradient(180deg, color-mix(in srgb, theme(colors.surface) 88%, transparent), color-mix(in srgb, theme(colors.canvas) 86%, transparent)); padding: .9rem 1rem; color: theme(colors.muted); font-size: .78rem; line-height: 1.55; box-shadow: inset 0 0 0 1px color-mix(in srgb, theme(colors.ink) 5%, transparent), 0 0 2rem color-mix(in srgb, theme(colors.electric) 32%, transparent), 0 1.2rem 3rem color-mix(in srgb, black 38%, transparent); backdrop-filter: blur(16px); }
+.tech-tree-detail strong { display: block; color: theme(colors.ink); font-size: .96rem; line-height: 1.25; }
+.tech-tree-detail strong span { color: theme(colors.cyan); text-shadow: 0 0 12px color-mix(in srgb, theme(colors.cyan) 58%, transparent); }
+.tech-tree-roots { position: absolute; left: 50%; right: auto; bottom: 5.6rem; z-index: 1; width: 105%; height: 8.3rem; transform: translateX(-50%) rotateX(58deg); border-radius: 50%; border: 1px solid color-mix(in srgb, theme(colors.electric) 38%, transparent); box-shadow: 0 0 2rem color-mix(in srgb, theme(colors.electric) 28%, transparent), inset 0 0 2rem color-mix(in srgb, theme(colors.violet) 18%, transparent); }
+.tech-tree-roots::before { content: ""; position: absolute; inset: 18% 4%; border-radius: inherit; border: 1px solid color-mix(in srgb, theme(colors.cyan) 28%, transparent); box-shadow: inset 0 0 2rem color-mix(in srgb, theme(colors.electric) 18%, transparent); }
+.tech-tree-roots span { position: absolute; left: 50%; top: 47%; width: 43%; height: 1px; transform-origin: left center; background: linear-gradient(90deg, color-mix(in srgb, theme(colors.ink) 88%, transparent), color-mix(in srgb, theme(colors.electric) 76%, transparent), transparent); box-shadow: 0 0 14px color-mix(in srgb, theme(colors.cyan) 50%, transparent); }
+.tech-tree-roots span:nth-child(1) { transform: rotate(0deg); }
+.tech-tree-roots span:nth-child(2) { transform: rotate(24deg); }
+.tech-tree-roots span:nth-child(3) { transform: rotate(-24deg); }
+.tech-tree-roots span:nth-child(4) { transform: rotate(48deg); }
+.tech-tree-roots span:nth-child(5) { transform: rotate(-48deg); }
+.tech-tree-roots span:nth-child(6) { transform: rotate(72deg); width: 33%; }
+.tech-tree-roots span:nth-child(7) { transform: rotate(-72deg); width: 33%; }
+.tech-tree-roots span:nth-child(8) { transform: rotate(118deg); width: 28%; }
+.tech-tree-roots span:nth-child(9) { transform: rotate(-118deg); width: 28%; }
 #features + [data-testid="desktop-action-rail"] .space-y-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
 #features + [data-testid="desktop-action-rail"] .panel { min-height: 5.5rem; padding: .85rem; }
 #features + [data-testid="desktop-action-rail"] .panel > span:first-child { width: 2.5rem; height: 2.5rem; }
