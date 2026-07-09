@@ -1,5 +1,6 @@
 import { BenefitsBar } from "@/components/finance/benefits-bar";
 import { AdvantagesPanel } from "@/components/finance/advantages-panel";
+import { DesktopFlowFooter } from "@/components/finance/desktop-flow-footer";
 import { PopularCoins } from "@/components/market/popular-coins";
 
 export function DesktopHomePage() {
@@ -13,5 +14,6 @@ export function DesktopHomePage() {
     <div className="mt-3 grid grid-cols-12 gap-3">
       <div className="col-span-12"><BenefitsBar /></div>
     </div>
+    <DesktopFlowFooter />
   </main>;
 }
