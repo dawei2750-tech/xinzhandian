@@ -9,6 +9,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 button { font: inherit; }
 .mobile-drawer-panel { display: none; }
 .mobile-drawer-panel:target { display: block; }
+.mobile-side-menu .peer:checked ~ .mobile-drawer-panel { display: block; }
 .scrollbar-none { scrollbar-width: none; }
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .page-grid::before { content: ""; position: fixed; inset: 0; pointer-events: none; background-image: theme(backgroundImage.grid); background-size: theme(backgroundSize.grid); mask-image: linear-gradient(to bottom, black, transparent 70%); }

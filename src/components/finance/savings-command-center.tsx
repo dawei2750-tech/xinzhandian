@@ -36,6 +36,9 @@ export function SavingsCommandCenter() {
         </span>
         <span className="mobile-mystery-action">{mystery.action}</span>
       </a>
+      <div data-testid="mobile-smart-contract-rate-table" className="mt-3 lg:hidden">
+        <SavingsRateTable {...savingsTables.fixed} rates={fixedSavingsRates} tone="violet" />
+      </div>
       <div data-testid="desktop-command-center-content" className="hidden lg:block">
         <div className="savings-command-header">
           <span className="savings-command-kicker">{copy.title}</span>
