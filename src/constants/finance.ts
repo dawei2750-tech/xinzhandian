@@ -23,15 +23,15 @@ export const uiText = {
 
 export const navItems: NavItem[] = [
   { label: "首页", href: "/" }, { label: "交易", href: "/#features" },
-  { label: "储蓄", href: "/pool?tab=plan" }, { label: "理财", href: "/loan" },
+  { label: "储蓄", href: "/savings-pool" }, { label: "理财", href: "/loan" },
   { label: "盲盒", href: "/docs" }, { label: "邀请", href: "/#features" },
   { label: "更多", href: "/docs" },
 ];
 
 export const mobileNavItems: NavItem[] = [
   { label: "首页", href: "/", icon: "home" }, { label: "交易", href: "/#features", icon: "swap" },
-  { label: "储蓄", href: "/pool?tab=plan", icon: "vault" }, { label: "理财", href: "/loan", icon: "finance" },
-  { label: "我的", href: "/pool?tab=plan", icon: "user" },
+  { label: "储蓄", href: "/savings-pool", icon: "vault" }, { label: "理财", href: "/loan", icon: "finance" },
+  { label: "我的", href: "/savings-pool", icon: "user" },
 ];
 
 export const marketItems: MarketItem[] = [
@@ -47,7 +47,7 @@ export const marketItems: MarketItem[] = [
 
 export const mobileDrawerItems: MobileDrawerItem[] = [
   { label: "首页", href: "/", icon: "home" },
-  { label: "储蓄计划", href: "/pool?tab=plan", icon: "vault" },
+  { label: "智能合约", href: "/savings-pool", icon: "vault" },
   { label: "贷款", href: "/loan", icon: "coins" },
   { label: "文档", href: "/docs", icon: "contract" },
   { label: "语言", href: "#language", icon: "globe" },

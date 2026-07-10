@@ -7,28 +7,52 @@ import { SavingsRateTable } from "@/components/finance/savings-rate-table";
 import { fixedSavingsRates, savingsTables } from "@/constants/finance";
 import { savingsCommandCopy } from "@/i18n/finance-copy";
 import { useLocale } from "@/i18n/locale-provider";
+import type { Locale } from "@/i18n/locales";
+
+const mobileMysteryCopy: Record<Locale, { eyebrow: string; title: string; detail: string; action: string }> = {
+  en: { eyebrow: "REWARD EVENT", title: "Mystery Box", detail: "The reward page is being prepared. Keep this entry visible for the upcoming draw rules.", action: "Preparing" },
+  "zh-CN": { eyebrow: "福利活动", title: "盲盒抽奖", detail: "活动页面准备中，奖励入口保留展示，后续接入后可查看抽奖规则。", action: "敬请期待" },
+  "zh-TW": { eyebrow: "福利活動", title: "盲盒抽獎", detail: "活動頁面準備中，獎勵入口保留展示，後續接入後可查看抽獎規則。", action: "敬請期待" },
+  ja: { eyebrow: "REWARD EVENT", title: "ミステリーボックス", detail: "イベントページの準備中も、報酬入口はここに表示されます。", action: "準備中" },
+  ko: { eyebrow: "REWARD EVENT", title: "미스터리 박스", detail: "이벤트 페이지가 준비되는 동안 보상 입구를 계속 표시합니다.", action: "준비 중" },
+  th: { eyebrow: "REWARD EVENT", title: "กล่องสุ่ม", detail: "ทางเข้ารางวัลยังแสดงไว้ระหว่างเตรียมหน้ากิจกรรม", action: "กำลังเตรียม" },
+};
 
 export function SavingsCommandCenter() {
   const { locale } = useLocale();
   const copy = savingsCommandCopy[locale];
+  const mystery = mobileMysteryCopy[locale];
 
   return <section id="features" data-testid="savings-command-center" className="savings-command-center savings-command-cockpit relative z-10 mx-auto max-w-content px-page py-4 sm:px-6 lg:py-5">
     <div className="savings-command-frame">
-      <div className="savings-command-header">
-        <span className="savings-command-kicker">{copy.title}</span>
-        <span className="savings-command-signal">{copy.signal}</span>
-      </div>
-      <div className="savings-command-control">
-        <SavingsCalculator testId="hero-savings-calculator" />
-        <div className="savings-command-metrics hidden lg:grid" aria-hidden="true">
-          {copy.metrics.map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}</strong></div>)}
+      <a href="/docs" data-testid="mobile-mystery-card" className="mobile-mystery-card lg:hidden">
+        <span className="mobile-mystery-eyebrow">{mystery.eyebrow}</span>
+        <strong>{mystery.title}</strong>
+        <span className="mobile-mystery-copy">{mystery.detail}</span>
+        <span className="mobile-mystery-visual" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </span>
+        <span className="mobile-mystery-action">{mystery.action}</span>
+      </a>
+      <div data-testid="desktop-command-center-content" className="hidden lg:block">
+        <div className="savings-command-header">
+          <span className="savings-command-kicker">{copy.title}</span>
+          <span className="savings-command-signal">{copy.signal}</span>
         </div>
+        <div className="savings-command-control">
+          <SavingsCalculator testId="hero-savings-calculator" />
+          <div className="savings-command-metrics hidden lg:grid" aria-hidden="true">
+            {copy.metrics.map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}</strong></div>)}
+          </div>
+        </div>
+        <div className="savings-command-rates">
+          <SavingsRateTable {...savingsTables.fixed} rates={fixedSavingsRates} tone="violet" />
+        </div>
+        <SavingsPoolTeasers />
+        <QuickActions className="command-action-strip hidden lg:grid" />
       </div>
-      <div className="savings-command-rates">
-        <SavingsRateTable {...savingsTables.fixed} rates={fixedSavingsRates} tone="violet" />
-      </div>
-      <SavingsPoolTeasers />
-      <QuickActions className="command-action-strip hidden lg:grid" />
     </div>
   </section>;
 }

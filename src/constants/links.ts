@@ -2,7 +2,7 @@ export const actionLinks = {
   trade: "/#features",
   mysteryBox: "/docs",
   invite: "/#features",
-  liquidityMining: "/pool?tab=plan",
-  fixedSavings: "/pool?tab=plan",
-  account: "/pool?tab=plan",
+  liquidityMining: "/savings-pool",
+  fixedSavings: "/savings-pool",
+  account: "/savings-pool",
 } as const;
