@@ -1,12 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { fixedSavingsRates } from "@/constants/finance";
 import { useLocale } from "@/i18n/locale-provider";
 import type { Locale } from "@/i18n/locales";
 
 type SmartTier = { participants: string; totalUsd: string; amount: string; rate: string };
-type ContractOrder = { tier: SmartTier; walletAmount: string; lockDays: string };
 
 const smartContractTiers: SmartTier[] = fixedSavingsRates.map((rate, index) => ({
   amount: rate.amount,
@@ -14,14 +13,6 @@ const smartContractTiers: SmartTier[] = fixedSavingsRates.map((rate, index) => (
   participants: ["272668", "251026", "143500", "77696", "84181", "78528", "75276", "75176", "68120"][index] ?? "0",
   totalUsd: ["1369481805", "2388085350", "5228852706", "13005640244", "8333539520", "10374180001", "25781598010", "3780348117", "3000000000"][index] ?? "0",
 }));
-
-const yieldStats = [
-  ["totalYieldCap", "3,000,000 ETH"],
-  ["paidEth", "0 ETH"],
-  ["paidUsdcValue", "0 USDC"],
-  ["remainingRewards", "3,000,000 ETH"],
-  ["currentParticipants", "0"],
-] as const;
 
 type Copy = {
   tabs: string[];
@@ -35,7 +26,7 @@ type Copy = {
 };
 
 const en: Copy = {
-  tabs: ["Pool Data", "Yield Stats", "Plan", "Account", "Transfer"],
+  tabs: ["Pool Data", "Plan", "Account", "Transfer"],
   planTabs: ["Interest", "Record"],
   accountTabs: ["Exchange", "Withdraw", "Record"],
   recordTabs: ["Exchange", "Withdraw", "Interest", "Rebate"],
@@ -80,8 +71,6 @@ const en: Copy = {
     paidUsdcValue: "Paid USDC value",
     remainingRewards: "Remaining rewards",
     currentParticipants: "Current participants",
-    walletAssetAmount: "Wallet asset amount",
-    customLockDays: "Custom lock days",
     autoMatchedTier: "Auto matched tier",
     walletRetention: "Assets remain in your wallet. No transfer to the platform is required; you can withdraw or transfer anytime after meeting the minimum interest distribution time.",
     flexibleRule: "Interest accrues in real time and is distributed every 4 hours, 6 times per day. Same-day deposit and withdrawal can still earn interest after the minimum distribution time is met.",
@@ -92,7 +81,7 @@ const en: Copy = {
 
 const zh: Copy = {
   ...en,
-  tabs: ["池数据", "收益统计", "计划", "账户", "转移"],
+  tabs: ["池数据", "计划", "账户", "转移"],
   planTabs: ["利息", "记录"],
   accountTabs: ["交换", "提取", "记录"],
   recordTabs: ["交换", "提取", "利息", "返佣"],
@@ -135,8 +124,6 @@ const zh: Copy = {
     paidUsdcValue: "已发放USDC价值",
     remainingRewards: "剩余可发放数量",
     currentParticipants: "当前参与人数",
-    walletAssetAmount: "钱包资产金额",
-    customLockDays: "自定义锁定天数",
     autoMatchedTier: "自动匹配档位",
     walletRetention: "资产始终保留在用户钱包，不需要转入平台；满足最低利息分配时间后，资金可随时提取或转移。",
     flexibleRule: "利息按实时累计，每 4 小时分配一次，一天 6 次；当天存当天取，满足最低利息分配时间也给利息。",
@@ -148,26 +135,11 @@ const zh: Copy = {
 const poolCopy: Record<Locale, Copy> = {
   en,
   "zh-CN": zh,
-  "zh-TW": { ...zh, tabs: ["池資料", "收益統計", "計劃", "帳戶", "轉移"], labels: { ...zh.labels, language: "語言", myAccount: "我的帳戶" } },
-  ja: { ...en, tabs: ["プールデータ", "収益統計", "プラン", "アカウント", "転送"], labels: { ...en.labels, language: "言語", myAccount: "マイアカウント" } },
-  ko: { ...en, tabs: ["풀 데이터", "수익 통계", "플랜", "계정", "이체"], labels: { ...en.labels, language: "언어", myAccount: "내 계정" } },
-  th: { ...en, tabs: ["ข้อมูลพูล", "สถิติผลตอบแทน", "แผน", "บัญชี", "โอน"], labels: { ...en.labels, language: "ภาษา", myAccount: "บัญชีของฉัน" } },
+  "zh-TW": { ...zh, tabs: ["池資料", "計劃", "帳戶", "轉移"], labels: { ...zh.labels, language: "語言", myAccount: "我的帳戶" } },
+  ja: { ...en, tabs: ["プールデータ", "プラン", "アカウント", "転送"], labels: { ...en.labels, language: "言語", myAccount: "マイアカウント" } },
+  ko: { ...en, tabs: ["풀 데이터", "플랜", "계정", "이체"], labels: { ...en.labels, language: "언어", myAccount: "내 계정" } },
+  th: { ...en, tabs: ["ข้อมูลพูล", "แผน", "บัญชี", "โอน"], labels: { ...en.labels, language: "ภาษา", myAccount: "บัญชีของฉัน" } },
 };
-
-function parseAmount(value: string) {
-  return Number(value.replaceAll(",", "")) || 0;
-}
-
-function matchesTier(amount: number, tierAmount: string) {
-  const normalized = tierAmount.replaceAll(",", "").toUpperCase();
-  if (normalized.startsWith("OVER ")) return amount >= Number(normalized.replace("OVER ", ""));
-  const [min, max] = normalized.split(" - ").map(Number);
-  return amount >= min && amount <= max;
-}
-
-function findTier(amount: number, tiers: SmartTier[]) {
-  return tiers.find((tier) => matchesTier(amount, tier.amount)) ?? tiers[0];
-}
 
 function usePoolCopy() {
   const { locale } = useLocale();
@@ -196,23 +168,15 @@ function PoolDataPanel() {
   return <section className="space-y-4" data-testid="pool-data-panel"><h2 className="text-lg font-semibold">{c.tabs[0]}</h2><div className="rounded-md border border-line bg-surface-soft px-4">{c.poolData.map(([label, value, unit]) => <Cell key={label} label={label} value={value} unit={unit} />)}</div></section>;
 }
 
-function YieldStatsPanel() {
-  const { c } = usePoolCopy();
-  return <section className="space-y-4" data-testid="yield-stats-panel"><h2 className="text-lg font-semibold">{c.labels.yieldStats}</h2><div className="rounded-md border border-line bg-surface-soft px-4">{yieldStats.map(([label, value]) => <Cell key={label} label={c.labels[label]} value={value} />)}</div></section>;
-}
-
 function TierRulesTable({ tiers }: { tiers: SmartTier[] }) {
   const { c } = usePoolCopy();
   return <div className="space-y-2">{tiers.map((tier) => <article key={tier.amount} className="rounded-md border border-line bg-surface-soft p-4"><div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm"><div><p className="text-muted">{c.labels.participant}</p><p className="mt-1 font-semibold">{tier.participants}</p></div><div><p className="text-muted">{c.labels.totalUsd}</p><p className="mt-1 font-semibold">{tier.totalUsd}</p></div><div><p className="text-muted">{c.labels.rate}</p><p className="mt-1 font-semibold text-accent">{tier.rate}</p></div><div><p className="text-muted">{c.labels.amountUsd}</p><p className="mt-1 font-semibold">{tier.amount}</p></div></div></article>)}</div>;
 }
 
-function PlanPanel({ onContract }: { onContract: (order: ContractOrder) => void }) {
+function PlanPanel() {
   const [tab, setTab] = useState(0);
-  const [walletAmount, setWalletAmount] = useState("50000");
-  const [lockDays, setLockDays] = useState("30");
   const { c } = usePoolCopy();
-  const matchedTier = useMemo(() => findTier(parseAmount(walletAmount), smartContractTiers), [walletAmount]);
-  return <section className="space-y-4" data-testid="contract-plan-panel"><InnerTabs items={c.planTabs} active={tab} onChange={setTab} />{tab === 0 ? <div className="space-y-4"><div className="rounded-md border border-accent/40 bg-surface-soft p-4"><p className="text-sm leading-6 text-muted">{c.labels.adminManaged}</p><label className="mt-4 block text-sm text-muted">{c.labels.walletAssetAmount}<input aria-label={c.labels.walletAssetAmount} type="number" min="0" inputMode="decimal" value={walletAmount} onChange={(event) => setWalletAmount(event.target.value)} className="mt-2 w-full rounded-md border border-line bg-surface px-3 py-3 text-ink outline-none" /></label><label className="mt-3 block text-sm text-muted">{c.labels.customLockDays}<input aria-label={c.labels.customLockDays} type="number" min="1" inputMode="numeric" value={lockDays} onChange={(event) => setLockDays(event.target.value)} className="mt-2 w-full rounded-md border border-line bg-surface px-3 py-3 text-ink outline-none" /></label><div className="mt-4 rounded-md border border-line bg-bg px-4"><Cell label={`${c.labels.smartContract} ${c.labels.autoMatchedTier}`} value={`${matchedTier.amount} / ${matchedTier.rate}`} /><Cell label={c.labels.amountRequirement} value={`${matchedTier.amount} ${c.labels.usdc}`} /></div><button type="button" onClick={() => onContract({ tier: matchedTier, walletAmount, lockDays })} className="mt-4 w-full rounded-md bg-accent px-4 py-3 text-sm font-semibold text-bg">{c.labels.smartContract}</button></div><h3 className="text-sm font-semibold text-muted">{c.labels.smartContract}</h3><TierRulesTable tiers={smartContractTiers} /></div> : <EmptyState />}</section>;
+  return <section className="space-y-4" data-testid="contract-plan-panel"><InnerTabs items={c.planTabs} active={tab} onChange={setTab} />{tab === 0 ? <div className="space-y-4"><div className="rounded-md border border-accent/40 bg-surface-soft p-4"><p className="text-sm leading-6 text-muted">{c.labels.adminManaged}</p><button type="button" className="mt-4 w-full rounded-md bg-accent px-4 py-3 text-sm font-semibold text-bg">{c.labels.smartContract}</button></div><h3 className="text-sm font-semibold text-muted">{c.labels.smartContract}</h3><TierRulesTable tiers={smartContractTiers} /></div> : <EmptyState />}</section>;
 }
 
 function AccountPanel() {
@@ -245,11 +209,6 @@ function TransferPanel() {
   return <section className="space-y-4" data-testid="contract-transfer-panel"><label className="block text-sm text-muted">{c.labels.from}<button type="button" onClick={() => { setDraftValue(fromValue); setFromOpen(true); }} className="mt-2 flex w-full items-center justify-between rounded-md border border-line bg-surface px-3 py-3 text-left text-ink"><span>{fromValue}</span><span className="text-muted">v</span></button></label><label className="block text-sm text-muted">{c.labels.to}<input className="mt-2 w-full rounded-md border border-line bg-surface px-3 py-3 text-ink outline-none" /></label><label className="block text-sm text-muted">{c.labels.quantity}<div className="mt-2 flex overflow-hidden rounded-md border border-line bg-surface"><input className="w-full bg-transparent px-3 py-3 text-ink outline-none" placeholder={c.labels.enterAmount} /><button type="button" className="border-l border-line px-4 text-sm font-semibold text-accent">{c.labels.all}</button></div></label><p className="text-sm text-muted">{c.labels.zeroUsd}</p><button type="button" className="w-full rounded-md bg-accent px-4 py-3 text-sm font-semibold text-bg">{c.labels.transfer}</button>{fromOpen ? <PickerModal title={c.labels.from} value={draftValue} options={c.fromOptions} onChange={setDraftValue} onCancel={() => setFromOpen(false)} onConfirm={() => { setFromValue(draftValue); setFromOpen(false); }} /> : null}</section>;
 }
 
-function ContractOrderModal({ order, onClose }: { order: ContractOrder; onClose: () => void }) {
-  const { c } = usePoolCopy();
-  return <div className="fixed inset-0 z-50 grid place-items-end bg-black/65"><section role="dialog" aria-modal="true" aria-label={c.labels.contractOrder} className="w-full rounded-t-lg border border-line bg-surface p-4 shadow-glow sm:mx-auto sm:mb-6 sm:max-w-md sm:rounded-lg"><h2 className="text-lg font-semibold">{c.labels.contractOrder}</h2><div className="mt-4 rounded-md border border-line bg-surface-soft px-4"><Cell label={c.labels.walletAssetAmount} value={`${order.walletAmount || "0"} ${c.labels.usdc}`} /><Cell label={c.labels.customLockDays} value={order.lockDays || "0"} /><Cell label={c.labels.autoMatchedTier} value={order.tier.amount} /><Cell label={c.labels.rate} value={order.tier.rate} /></div><p className="mt-3 text-sm leading-6 text-muted">{c.labels.walletRetention}</p><button type="button" className="mt-4 w-full rounded-md bg-accent px-4 py-3 text-sm font-semibold text-bg">{c.labels.confirm}</button><button type="button" onClick={onClose} className="mt-3 w-full rounded-md border border-line px-4 py-2.5 text-sm font-semibold text-muted">{c.labels.cancel}</button></section></div>;
-}
-
 function PickerModal({ title, value, options, onChange, onCancel, onConfirm }: { title: string; value: string; options: string[]; onChange: (value: string) => void; onCancel: () => void; onConfirm: () => void }) {
   const { c } = usePoolCopy();
   return <div className="fixed inset-0 z-50 grid place-items-end bg-black/65"><section role="dialog" aria-modal="true" aria-label={title} className="w-full rounded-t-lg border border-line bg-surface p-4 shadow-glow sm:mx-auto sm:mb-6 sm:max-w-md sm:rounded-lg"><div className="flex items-center justify-between"><button type="button" onClick={onCancel} className="px-3 py-2 text-sm font-semibold text-muted">{c.labels.cancel}</button><button type="button" onClick={onConfirm} className="px-3 py-2 text-sm font-semibold text-accent">{c.labels.confirm}</button></div><div className="mt-3 overflow-hidden rounded-md border border-line">{options.map((option) => <button key={option} type="button" onClick={() => onChange(option)} className={`block w-full border-b border-line px-4 py-4 text-center text-sm font-semibold last:border-b-0 ${value === option ? "bg-surface-soft text-accent" : "text-ink"}`}>{option}</button>)}</div></section></div>;
@@ -263,6 +222,5 @@ function EmptyState() {
 export default function SavingsPoolPage() {
   const { c } = usePoolCopy();
   const [mainTab, setMainTab] = useState(0);
-  const [order, setOrder] = useState<ContractOrder | null>(null);
-  return <main className="min-h-screen bg-bg px-4 py-5 text-ink"><div className="mx-auto w-full max-w-[430px] space-y-4"><section className="rounded-lg border border-line bg-surface p-4 shadow-glow" data-testid="smart-contract-pool"><div role="tablist" aria-label={c.labels.smartContract} className="flex">{c.tabs.map((tab, index) => <MainTab key={tab} label={tab} active={mainTab === index} onClick={() => setMainTab(index)} />)}</div><div className="mt-4">{mainTab === 0 ? <PoolDataPanel /> : null}{mainTab === 1 ? <YieldStatsPanel /> : null}{mainTab === 2 ? <PlanPanel onContract={setOrder} /> : null}{mainTab === 3 ? <AccountPanel /> : null}{mainTab === 4 ? <TransferPanel /> : null}</div></section><PageFooter /></div>{order ? <ContractOrderModal order={order} onClose={() => setOrder(null)} /> : null}</main>;
+  return <main className="min-h-screen bg-bg px-4 py-5 text-ink"><div className="mx-auto w-full max-w-[430px] space-y-4"><section className="rounded-lg border border-line bg-surface p-4 shadow-glow" data-testid="smart-contract-pool"><div role="tablist" aria-label={c.labels.smartContract} className="flex">{c.tabs.map((tab, index) => <MainTab key={tab} label={tab} active={mainTab === index} onClick={() => setMainTab(index)} />)}</div><div className="mt-4">{mainTab === 0 ? <PoolDataPanel /> : null}{mainTab === 1 ? <PlanPanel /> : null}{mainTab === 2 ? <AccountPanel /> : null}{mainTab === 3 ? <TransferPanel /> : null}</div></section><PageFooter /></div></main>;
 }
