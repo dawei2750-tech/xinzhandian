@@ -105,7 +105,7 @@ button { font: inherit; }
 .savings-command-header { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-radius: .8rem .8rem .35rem .35rem; border: 1px solid color-mix(in srgb, theme(colors.electric) 22%, transparent); background: color-mix(in srgb, theme(colors.canvas) 48%, transparent); padding: .55rem .8rem; font-size: .68rem; font-weight: 900; letter-spacing: .14em; color: theme(colors.cyan); }
 .savings-command-kicker { text-shadow: 0 0 14px color-mix(in srgb, theme(colors.cyan) 50%, transparent); }
 .savings-command-signal { color: theme(colors.success); text-shadow: 0 0 12px color-mix(in srgb, theme(colors.success) 42%, transparent); }
-.savings-command-control { position: relative; z-index: 1; margin-top: 1rem; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(18rem, .9fr); gap: .9rem; align-items: stretch; }
+.savings-command-control { position: relative; z-index: 1; margin-top: 1rem; display: grid; grid-template-columns: 1fr; gap: .9rem; align-items: stretch; }
 .savings-command-control [data-testid="hero-savings-calculator"] { border-color: color-mix(in srgb, theme(colors.cyan) 42%, transparent); background: linear-gradient(180deg, color-mix(in srgb, theme(colors.surface) 78%, transparent), color-mix(in srgb, theme(colors.canvas) 74%, transparent)); box-shadow: inset 0 0 0 1px color-mix(in srgb, theme(colors.ink) 5%, transparent), 0 0 1.6rem color-mix(in srgb, theme(colors.cyan) 16%, transparent); padding: 1rem; }
 .savings-command-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
 .savings-command-metrics.hidden { display: none; }

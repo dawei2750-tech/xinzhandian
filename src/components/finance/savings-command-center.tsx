@@ -1,7 +1,6 @@
 "use client";
 
 import { QuickActions } from "@/components/finance/quick-actions";
-import { SavingsCalculator } from "@/components/finance/savings-calculator";
 import { SavingsPoolTeasers } from "@/components/finance/savings-pool-teasers";
 import { SavingsRateTable } from "@/components/finance/savings-rate-table";
 import { fixedSavingsRates, savingsTables } from "@/constants/finance";
@@ -18,10 +17,20 @@ const mobileMysteryCopy: Record<Locale, { eyebrow: string; title: string; detail
   th: { eyebrow: "REWARD EVENT", title: "กล่องสุ่ม", detail: "ทางเข้ารางวัลยังแสดงไว้ระหว่างเตรียมหน้ากิจกรรม", action: "กำลังเตรียม" },
 };
 
+const mobileYieldCopy: Record<Locale, { title: string; items: [string, string][] }> = {
+  en: { title: "Yield Stats", items: [["Total yield cap", "3,000,000 ETH"], ["Paid ETH", "0 ETH"], ["Paid USDC value", "0 USDC"], ["Remaining rewards", "3,000,000 ETH"], ["Current participants", "0"]] },
+  "zh-CN": { title: "收益统计", items: [["总收益上限", "3,000,000 ETH"], ["已发放 ETH 数量", "0 ETH"], ["已发放 USDC 价值", "0 USDC"], ["剩余可发放数量", "3,000,000 ETH"], ["当前参与人数", "0"]] },
+  "zh-TW": { title: "收益統計", items: [["總收益上限", "3,000,000 ETH"], ["已發放 ETH 數量", "0 ETH"], ["已發放 USDC 價值", "0 USDC"], ["剩餘可發放數量", "3,000,000 ETH"], ["目前參與人數", "0"]] },
+  ja: { title: "Yield Stats", items: [["Total yield cap", "3,000,000 ETH"], ["Paid ETH", "0 ETH"], ["Paid USDC value", "0 USDC"], ["Remaining rewards", "3,000,000 ETH"], ["Current participants", "0"]] },
+  ko: { title: "Yield Stats", items: [["Total yield cap", "3,000,000 ETH"], ["Paid ETH", "0 ETH"], ["Paid USDC value", "0 USDC"], ["Remaining rewards", "3,000,000 ETH"], ["Current participants", "0"]] },
+  th: { title: "Yield Stats", items: [["Total yield cap", "3,000,000 ETH"], ["Paid ETH", "0 ETH"], ["Paid USDC value", "0 USDC"], ["Remaining rewards", "3,000,000 ETH"], ["Current participants", "0"]] },
+};
+
 export function SavingsCommandCenter() {
   const { locale } = useLocale();
   const copy = savingsCommandCopy[locale];
   const mystery = mobileMysteryCopy[locale];
+  const yieldCopy = mobileYieldCopy[locale];
 
   return <section id="features" data-testid="savings-command-center" className="savings-command-center savings-command-cockpit relative z-10 mx-auto max-w-content px-page py-4 sm:px-6 lg:py-5">
     <div className="savings-command-frame">
@@ -36,6 +45,12 @@ export function SavingsCommandCenter() {
         </span>
         <span className="mobile-mystery-action">{mystery.action}</span>
       </a>
+      <section data-testid="mobile-yield-stats-panel" className="mt-3 rounded-panel border border-cyan/30 bg-surface-soft/80 p-4 lg:hidden">
+        <h2 className="text-base font-semibold text-ink">{yieldCopy.title}</h2>
+        <div className="mt-3 divide-y divide-line/70">
+          {yieldCopy.items.map(([label, value]) => <div key={label} className="flex items-center justify-between gap-3 py-2.5 text-sm"><span className="text-muted">{label}</span><strong className="text-right text-ink">{value}</strong></div>)}
+        </div>
+      </section>
       <div data-testid="mobile-smart-contract-rate-table" className="mt-3 lg:hidden">
         <SavingsRateTable {...savingsTables.fixed} rates={fixedSavingsRates} tone="violet" />
       </div>
@@ -45,7 +60,6 @@ export function SavingsCommandCenter() {
           <span className="savings-command-signal">{copy.signal}</span>
         </div>
         <div className="savings-command-control">
-          <SavingsCalculator testId="hero-savings-calculator" />
           <div className="savings-command-metrics hidden lg:grid" aria-hidden="true">
             {copy.metrics.map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}</strong></div>)}
           </div>
