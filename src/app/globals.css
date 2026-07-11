@@ -36,6 +36,82 @@ button { font: inherit; }
   .market-ticker-viewport { overflow: hidden; }
   .market-ticker-marquee { animation: none; }
 }
+
+@media (max-width: 767px) {
+  .admin-shell [class*="grid-cols-"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .admin-shell header {
+    position: relative;
+  }
+
+  .admin-shell header > div,
+  .admin-shell header > div > div:last-child {
+    width: 100%;
+  }
+
+  .admin-shell header > div > div:last-child {
+    justify-content: flex-start;
+  }
+
+  .admin-shell aside {
+    overflow: hidden;
+    padding: .5rem;
+    border-radius: .875rem;
+  }
+
+  .admin-shell aside > div:first-child,
+  .admin-shell aside > div:last-child,
+  .admin-shell aside small {
+    display: none;
+  }
+
+  .admin-shell aside > div:nth-child(2) {
+    display: flex !important;
+    gap: .375rem;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .admin-shell aside > div:nth-child(2)::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-shell aside button {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 44px;
+    margin: 0;
+    padding-inline: .875rem;
+    scroll-snap-align: start;
+  }
+
+  .admin-shell main section {
+    padding: 1rem;
+    border-radius: 0.875rem;
+  }
+
+  .admin-shell main article[class*="grid-cols-"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .admin-shell table th:first-child,
+  .admin-shell table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--color-surface, #111827);
+  }
+
+  .admin-shell input,
+  .admin-shell select,
+  .admin-shell textarea,
+  .admin-shell button {
+    min-height: 44px;
+  }
+}
 .global-volume-globe { margin: .35rem 0 .15rem; overflow: clip; }
 .global-volume-hero { margin: 0 auto .4rem; padding: .55rem theme(spacing.page) 0; min-height: 25rem; }
 .global-volume-hero .global-volume-shell { max-width: theme(maxWidth.content); min-height: 24rem; }
@@ -227,6 +303,8 @@ button { font: inherit; }
 .advantages-tech-tree-panel::after { content: ""; position: absolute; left: 9%; right: 9%; bottom: -2rem; height: 4rem; pointer-events: none; background: radial-gradient(ellipse at 50% 0, color-mix(in srgb, theme(colors.electric) 38%, transparent), transparent 65%); filter: blur(8px); opacity: .9; }
 .advantages-tech-tree-head { position: relative; z-index: 4; border-bottom: 1px solid color-mix(in srgb, theme(colors.electric) 28%, transparent); background: linear-gradient(180deg, color-mix(in srgb, theme(colors.surface) 52%, transparent), transparent); text-align: center; }
 .advantages-tech-tree-stage { position: relative; min-height: 43rem; padding: 1rem .75rem 2rem; overflow: hidden; perspective: 900px; }
+.advantages-tree-desktop .advantages-tech-tree-stage { min-height: 52rem; }
+.advantages-tree-desktop .tech-tree-node { min-width: 7rem; max-width: 10rem; }
 .tech-tree-aura { position: absolute; inset: 1.5rem -18% 5rem; background: radial-gradient(circle at 50% 47%, color-mix(in srgb, theme(colors.electric) 42%, transparent), transparent 24%), radial-gradient(circle at 50% 68%, color-mix(in srgb, theme(colors.violet) 35%, transparent), transparent 24%); filter: blur(18px); opacity: .72; }
 .tech-tree-trunk { position: absolute; left: 50%; top: 4.2rem; bottom: 8rem; width: 5.5rem; transform: translateX(-50%); filter: drop-shadow(0 0 16px color-mix(in srgb, theme(colors.electric) 72%, transparent)); }
 .tech-tree-trunk::before, .tech-tree-trunk::after, .tech-tree-trunk span { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: .14rem; border-radius: 999px; background: linear-gradient(180deg, transparent, theme(colors.cyan) 12%, theme(colors.ink) 48%, theme(colors.electric) 78%, transparent); box-shadow: 0 0 1rem color-mix(in srgb, theme(colors.electric) 65%, transparent); transform-origin: bottom; }

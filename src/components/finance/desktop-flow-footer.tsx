@@ -1,3 +1,6 @@
+"use client";
+import { useLocale } from "@/i18n/locale-provider";
+
 const flowItems = [
   "USDC settlement",
   "Daily yield stream",
@@ -10,7 +13,10 @@ const flowItems = [
 ];
 
 export function DesktopFlowFooter() {
-  const lanes = [flowItems, [...flowItems].reverse()];
+  const { locale } = useLocale();
+  const zh = locale === "zh-CN" || locale === "zh-TW";
+  const localizedItems = zh ? ["USDC 结算", "每日收益流", "灵活池路由", "定期到期", "链上证明", "风险控制信号", "全球交易量", "档位匹配利率"] : flowItems;
+  const lanes = [localizedItems, [...localizedItems].reverse()];
   const stats = [
     ["24H", "$64.94B"],
     ["Plans", "Live"],
@@ -25,8 +31,8 @@ export function DesktopFlowFooter() {
         ))}
       </div>
       <div className="desktop-flow-copy">
-        <p>LIVE ON-CHAIN ROUTING</p>
-        <h2>Capital paths keep moving after every savings action.</h2>
+        <p>{zh ? "实时链上路由" : "LIVE ON-CHAIN ROUTING"}</p>
+        <h2>{zh ? "每一次储蓄操作之后，资金路径仍持续流转。" : "Capital paths keep moving after every savings action."}</h2>
       </div>
       <div className="desktop-flow-stats" aria-hidden="true">
         {stats.map(([label, value]) => (

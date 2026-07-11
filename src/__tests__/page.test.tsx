@@ -1,27 +1,539 @@
-import{readFileSync}from"node:fs";import{fireEvent,render,screen,within}from"@testing-library/react";import Home from"@/app/page";import{LocaleProvider}from"@/i18n/locale-provider";
-const renderHome=()=>render(<LocaleProvider><Home/></LocaleProvider>);
-describe("finance home",()=>{
-beforeEach(()=>{localStorage.clear();delete process.env.NEXT_PUBLIC_MAINTENANCE_MODE});
-it("always renders the finance home and never shows a maintenance page",()=>{process.env.NEXT_PUBLIC_MAINTENANCE_MODE="true";renderHome();expect(screen.queryByRole("heading",{name:"Service maintenance"})).not.toBeInTheDocument();expect(screen.queryByText(/temporarily offline/i)).not.toBeInTheDocument();expect(screen.getByTestId("desktop-home")).toBeInTheDocument();expect(screen.getByTestId("mobile-home")).toBeInTheDocument();expect(screen.getByTestId("top-market-ticker")).toBeInTheDocument()});
-it("uses separate responsive layouts with English as the default",()=>{renderHome();const desktop=screen.getByTestId("desktop-home"),mobile=screen.getByTestId("mobile-home");expect(desktop).toHaveClass("hidden","lg:block");expect(mobile).toHaveClass("lg:hidden");expect(screen.getByRole("link",{name:"Blockchain Savings"})).toBeInTheDocument();expect(within(mobile).getByLabelText("Mobile navigation")).toHaveClass("fixed");expect(document.querySelectorAll("#home")).toHaveLength(1);expect(document.querySelectorAll("#features")).toHaveLength(1)});
-it("keeps only the smart contract rate table inside the unified command center",()=>{renderHome();expect(screen.queryByText(/Annual Rate|APR|年化收益/)).not.toBeInTheDocument();const commandCenter=screen.getByTestId("savings-command-center");expect(commandCenter).toHaveClass("savings-command-center");expect(commandCenter).not.toHaveTextContent(/Flexible Savings|Flexible Access|灵活储蓄/);const tables=within(commandCenter).getAllByTestId("rate-table");expect(tables).toHaveLength(1);expect(within(tables[0]).getByRole("heading",{name:/Smart Contract Rates/})).toBeInTheDocument();expect(within(tables[0]).getAllByRole("columnheader")).toHaveLength(2);expect(within(tables[0]).getByText("11.00%")).toBeInTheDocument()});
-it("keeps the promo carousel above the global volume globe and keeps all advantages",()=>{renderHome();const promoSlides=screen.getAllByTestId("promo-banner-slide");expect(promoSlides).toHaveLength(4);expect(screen.queryByTestId("desktop-global-volume-globe")).not.toBeInTheDocument();expect(screen.queryByTestId("mobile-global-volume-globe")).not.toBeInTheDocument();const heroGlobe=screen.getByTestId("hero-global-volume-globe");expect(promoSlides[0].compareDocumentPosition(heroGlobe)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();expect(heroGlobe).not.toHaveClass("panel");expect(heroGlobe).toHaveClass("global-volume-hero");expect(heroGlobe).not.toHaveTextContent("Blockchain Savings");expect(heroGlobe).not.toHaveTextContent("Global savings activity");expect(within(heroGlobe).queryByTestId("global-volume-copy")).not.toBeInTheDocument();expect(within(heroGlobe).getAllByTestId("globe-proof-ribbon-item").length).toBeGreaterThan(4);for(const layout of[screen.getByTestId("desktop-home"),screen.getByTestId("mobile-home")]){const panel=within(layout).getByTestId("advantages-panel");const firstButton=within(panel).getByRole("button",{name:/01.*Rewards Program/});expect(within(panel).getAllByRole("button")).toHaveLength(11);fireEvent.click(firstButton);expect(within(panel).getByTestId(`${layout.dataset.testid==="desktop-home"?"desktop":"mobile"}-advantage-body-01`).textContent).toBeTruthy()}});
-it("applies the illuminated ticker treatment before the promo carousel and hero globe",()=>{renderHome();const topTicker=screen.getByTestId("top-market-ticker");const promoSlide=screen.getAllByTestId("promo-banner-slide")[0];const heroGlobe=screen.getByTestId("hero-global-volume-globe");expect(topTicker).toHaveClass("market-ticker-highlight","market-ticker-spotlight","market-ticker-top");expect(topTicker.compareDocumentPosition(promoSlide)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();expect(promoSlide.compareDocumentPosition(heroGlobe)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();expect(within(topTicker).getAllByTestId("ticker-value-pill").length).toBeGreaterThan(0);expect(within(topTicker).getAllByTestId("ticker-change-positive").length).toBeGreaterThan(0);expect(within(topTicker).getAllByTestId("ticker-change-negative").length).toBeGreaterThan(0)})
-it("keeps mobile advantages unchanged while refining the desktop advantages panel",()=>{renderHome();const desktopPanel=within(screen.getByTestId("desktop-home")).getByTestId("advantages-panel");const mobilePanel=within(screen.getByTestId("mobile-home")).getByTestId("advantages-panel");expect(desktopPanel).toHaveClass("advantages-panel-desktop");expect(mobilePanel).not.toHaveClass("advantages-panel-desktop");const firstButton=within(desktopPanel).getByRole("button",{name:/01.*Rewards Program/});expect(firstButton).toHaveClass("advantage-row");fireEvent.click(firstButton);expect(firstButton).toHaveClass("advantage-row-active");expect(within(desktopPanel).getByTestId("desktop-advantage-body-01")).toHaveClass("advantage-body-active")})
-it("renders the mobile advantages as a luminous technology tree",()=>{renderHome();const mobilePanel=within(screen.getByTestId("mobile-home")).getByTestId("advantages-panel");expect(mobilePanel).toHaveClass("advantages-tech-tree-panel");expect(within(mobilePanel).getByTestId("advantages-tech-tree-stage")).toBeInTheDocument();expect(within(mobilePanel).getByTestId("advantages-tech-tree-trunk")).toBeInTheDocument();expect(within(mobilePanel).getByTestId("advantages-tech-tree-roots")).toBeInTheDocument();const nodes=within(mobilePanel).getAllByTestId("advantages-tech-tree-node");expect(nodes).toHaveLength(11);expect(nodes[0]).toHaveClass("tech-tree-node");fireEvent.click(within(mobilePanel).getByRole("button",{name:/03.*How to stake USDC in your wallet/}));expect(within(mobilePanel).getByTestId("mobile-advantage-body-03")).toHaveClass("tech-tree-detail")})
-it("shows the full desktop advantages list without changing mobile advantages",()=>{renderHome();const desktop=screen.getByTestId("desktop-home");const sidebar=within(desktop).getByTestId("desktop-sidebar");const desktopPanel=within(sidebar).getByTestId("advantages-panel");const mobilePanel=within(screen.getByTestId("mobile-home")).getByTestId("advantages-panel");expect(desktopPanel).toHaveClass("advantages-panel-desktop","advantages-panel-complete");expect(within(desktopPanel).getAllByRole("button")).toHaveLength(11);expect(within(sidebar).getByRole("button",{name:/11.*How to join/})).toBeInTheDocument();expect(mobilePanel).not.toHaveClass("advantages-panel-complete")});
-it("integrates a desktop-only on-chain status footer inside the advantages sidebar",()=>{renderHome();const sidebar=within(screen.getByTestId("desktop-home")).getByTestId("desktop-sidebar");const panel=within(sidebar).getByTestId("advantages-panel");const visual=within(panel).getByTestId("chain-flow-card");expect(panel).toContainElement(visual);expect(visual.compareDocumentPosition(within(panel).getByRole("button",{name:/11.*How to join/}))&Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();expect(within(screen.getByTestId("mobile-home")).queryByTestId("chain-flow-card")).not.toBeInTheDocument()});
-it("keeps the desktop lower layout compact without the redundant savings snapshot",()=>{renderHome();const sidebar=within(screen.getByTestId("desktop-home")).getByTestId("desktop-sidebar");expect(sidebar).toHaveClass("col-span-3");expect(within(sidebar).queryByTestId("savings-snapshot")).not.toBeInTheDocument();expect(within(screen.getByTestId("mobile-home")).queryByTestId("savings-snapshot")).not.toBeInTheDocument()});
-it("fills the desktop lower gap with a proof engine before the scrolling footer",()=>{renderHome();const desktop=screen.getByTestId("desktop-home");const proofMatrix=within(desktop).getByTestId("desktop-proof-matrix");const benefits=within(desktop).getByTestId("benefits-bar");const footer=within(desktop).getByTestId("desktop-flow-footer");expect(proofMatrix).toHaveClass("savings-proof-matrix","savings-proof-engine");expect(within(proofMatrix).getByRole("heading",{name:"Savings Proof Engine"})).toBeInTheDocument();expect(within(proofMatrix).getByTestId("savings-proof-terminal")).toHaveTextContent("LIVE PROOF LAYER");expect(within(proofMatrix).getAllByTestId("savings-proof-node")).toHaveLength(5);expect(within(proofMatrix).getAllByTestId("savings-proof-metric")).toHaveLength(3);expect(within(proofMatrix).getAllByTestId("savings-proof-risk")).toHaveLength(3);expect(proofMatrix.compareDocumentPosition(benefits)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();expect(benefits.compareDocumentPosition(footer)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();expect(proofMatrix).toHaveTextContent("Plan Match");expect(proofMatrix).toHaveTextContent("Maturity Payout");expect(proofMatrix).toHaveTextContent("Trace Layer");expect(within(footer).queryByTestId("desktop-proof-matrix")).not.toBeInTheDocument();expect(within(footer).getAllByTestId("desktop-flow-lane")).toHaveLength(2);expect(footer).toHaveTextContent("USDC settlement");expect(footer).toHaveTextContent("Daily yield stream");expect(within(screen.getByTestId("mobile-home")).queryByTestId("desktop-flow-footer")).not.toBeInTheDocument();expect(within(screen.getByTestId("mobile-home")).queryByTestId("desktop-proof-matrix")).not.toBeInTheDocument()});
-it("places a savings command center below the globe with mobile yield stats, smart contract rates and pool entry",()=>{renderHome();const heroGlobe=screen.getByTestId("hero-global-volume-globe");const commandCenter=screen.getByTestId("savings-command-center");const mobileMystery=within(commandCenter).getByTestId("mobile-mystery-card");const mobileYield=within(commandCenter).getByTestId("mobile-yield-stats-panel");const desktopContent=within(commandCenter).getByTestId("desktop-command-center-content");expect(heroGlobe.compareDocumentPosition(commandCenter)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();expect(commandCenter).toHaveClass("savings-command-center","savings-command-cockpit");expect(mobileMystery).toHaveClass("lg:hidden");expect(mobileMystery).toHaveTextContent("Mystery Box");expect(mobileMystery).toHaveAttribute("href","/docs");expect(mobileYield).toHaveClass("lg:hidden");expect(mobileYield).toHaveTextContent("Yield Stats");expect(mobileYield).toHaveTextContent("3,000,000 ETH");expect(desktopContent).toHaveClass("hidden","lg:block");expect(within(commandCenter).queryByTestId("hero-savings-calculator")).not.toBeInTheDocument();expect(screen.queryByTestId("desktop-savings-calculator")).not.toBeInTheDocument();expect(screen.queryByTestId("mobile-savings-calculator")).not.toBeInTheDocument();expect(screen.queryByTestId("desktop-rates")).not.toBeInTheDocument();expect(screen.queryByTestId("mobile-rates")).not.toBeInTheDocument();expect(screen.queryByTestId("feature-grid")).not.toBeInTheDocument();expect(screen.queryByText("8888 USDC")).not.toBeInTheDocument();const rates=within(commandCenter).getAllByTestId("rate-table");const rateLinks=within(commandCenter).getAllByTestId("rate-table-deposit-link");const teasers=within(commandCenter).getByTestId("pool-teaser-panel");expect(rates).toHaveLength(1);expect(rateLinks).toHaveLength(1);expect(within(teasers).getAllByTestId("pool-teaser-card")).toHaveLength(1);expect(rateLinks.every((link)=>link.getAttribute("href")==="/savings-pool")).toBe(true);expect(rates[0].compareDocumentPosition(teasers)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()});
-it("moves the six-beam spotlight to the bottom of H5 while removing mobile benefit cards",()=>{renderHome();const commandCenter=screen.getByTestId("savings-command-center");expect(within(commandCenter).queryByTestId("spotlight-hub")).not.toBeInTheDocument();const mobile=screen.getByTestId("mobile-home");const spotlight=within(mobile).getByTestId("spotlight-hub");const coinSection=within(mobile).getByTestId("coin-grid").closest("section");expect(coinSection).toBeTruthy();expect(spotlight).toHaveClass("mobile-spotlight-hub","lg:hidden");expect(coinSection!.compareDocumentPosition(spotlight)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();expect(within(spotlight).getByTestId("spotlight-core")).toBeInTheDocument();expect(within(spotlight).getAllByTestId("spotlight-beam")).toHaveLength(5);for(const name of["Smart Contract","Mystery Box","Invite Friends","Multi-chain Proof"])expect(within(spotlight).getByRole("button",{name:new RegExp(name)})).toBeInTheDocument();expect(within(spotlight).queryByRole("button",{name:/Flexible Access/})).not.toBeInTheDocument();expect(within(spotlight).getByRole("link",{name:/View Plans/})).toHaveAttribute("href","/savings-pool");fireEvent.click(within(spotlight).getByRole("button",{name:/Mystery Box/}));expect(within(spotlight).queryByRole("link",{name:/Preparing/})).not.toBeInTheDocument();expect(within(spotlight).getByRole("button",{name:/Preparing/})).toBeInTheDocument();fireEvent.click(within(spotlight).getByRole("button",{name:/Invite Friends/}));expect(spotlight).toHaveTextContent("Non-high-net-worth members cannot share dividend vouchers");expect(within(spotlight).queryByRole("link",{name:/Unavailable/})).not.toBeInTheDocument();expect(within(spotlight).getByRole("button",{name:/Unavailable/})).toBeInTheDocument();fireEvent.change(screen.getByRole("combobox",{name:"Language"}),{target:{value:"zh-CN"}});const smartContractBeam=within(spotlight).getByRole("button",{name:/智能合约/});expect(smartContractBeam).toBeInTheDocument();expect(within(spotlight).getByRole("button",{name:/盲盒抽奖/})).toBeInTheDocument();fireEvent.click(smartContractBeam);expect(within(spotlight).getByRole("link",{name:/查看计划/})).toHaveAttribute("href","/savings-pool");expect(within(spotlight).getByTestId("spotlight-active-panel")).toHaveClass("spotlight-active-panel");const quick=within(commandCenter).getByTestId("quick-actions");expect(quick).toHaveClass("hidden","lg:grid");expect(within(mobile).queryByTestId("benefits-bar")).not.toBeInTheDocument();expect(within(screen.getByTestId("desktop-home")).getByTestId("benefits-bar")).toBeInTheDocument()});
-it("uses distinct functional destinations for navigation and keeps rewards as lightweight actions",()=>{renderHome();const mainNav=screen.getByRole("navigation",{name:"Main navigation"});expect(within(mainNav).getByRole("link",{name:"Trade"})).toHaveAttribute("href","/#features");expect(within(mainNav).getByRole("link",{name:"Savings"})).toHaveAttribute("href","/savings-pool");expect(within(mainNav).getByRole("link",{name:"Finance"})).toHaveAttribute("href","/loan");expect(screen.getByRole("link",{name:"ReceiveVoucher"})).toHaveAttribute("href","/savings-pool");expect(screen.queryByRole("link",{name:"Start Savings"})).not.toBeInTheDocument();expect(document.querySelector("#features")).toBeInTheDocument();expect(document.querySelector("#mystery-box")).not.toBeInTheDocument();expect(document.querySelector("#invite-friends")).not.toBeInTheDocument();const commandCenter=screen.getByTestId("savings-command-center");const mobileNav=screen.getByRole("navigation",{name:"Mobile navigation"});expect(within(mobileNav).getByRole("link",{name:/Trade/})).toHaveAttribute("href","/#features");expect(within(mobileNav).getByRole("link",{name:/Savings/})).toHaveAttribute("href","/savings-pool");expect(screen.queryByRole("link",{name:/Draw Now|Invite Now/})).not.toBeInTheDocument();expect(within(commandCenter).getAllByRole("link",{name:/Smart Contract/}).some((link)=>link.getAttribute("href")==="/savings-pool")).toBe(true);expect(within(commandCenter).queryByRole("link",{name:/Liquidity Mining|Join Now/})).not.toBeInTheDocument()});
-it("opens distinct advantage bodies after switching every locale",()=>{renderHome();const language=screen.getByRole("combobox",{name:"Language"});for(const locale of["en","zh-CN","zh-TW","ja","ko","th"]){fireEvent.change(language,{target:{value:locale}});const panel=within(screen.getByTestId("desktop-home")).getByTestId("advantages-panel");const first=within(panel).getAllByRole("button")[0];fireEvent.click(first);const firstBody=within(panel).getByTestId("desktop-advantage-body-01").textContent;fireEvent.click(within(panel).getAllByRole("button")[1]);const secondBody=within(panel).getByTestId("desktop-advantage-body-02").textContent;expect(firstBody).toBeTruthy();expect(secondBody).toBeTruthy();expect(firstBody).not.toBe(secondBody)}});
-it("switches advantage body copy with the selected locale",()=>{renderHome();const language=screen.getByRole("combobox",{name:"Language"});const panel=within(screen.getByTestId("desktop-home")).getByTestId("advantages-panel");fireEvent.change(language,{target:{value:"en"}});fireEvent.click(within(panel).getAllByRole("button")[0]);const englishBody=within(panel).getByTestId("desktop-advantage-body-01").textContent;expect(englishBody).toMatch(/eligible customers/i);fireEvent.change(language,{target:{value:"ja"}});const japaneseBody=within(panel).getByTestId("desktop-advantage-body-01").textContent;expect(japaneseBody).toBeTruthy();expect(japaneseBody).not.toBe(englishBody)});
-it("removes the large reward cards so savings content stays primary",()=>{renderHome();expect(screen.queryByTestId("feature-grid")).not.toBeInTheDocument();expect(screen.queryByTestId("feature-card-primary")).not.toBeInTheDocument();expect(screen.queryByTestId("feature-card-secondary")).not.toBeInTheDocument();expect(screen.queryByText("8888 USDC")).not.toBeInTheDocument();expect(screen.queryByText(/Liquidity Mining|流动性挖矿/)).not.toBeInTheDocument()})
-it("switches shared command center and responsive content from the shared selector",()=>{renderHome();fireEvent.change(screen.getByRole("combobox",{name:"Language"}),{target:{value:"ja"}});expect(screen.getAllByText(/スマートコントラクト|Smart Contract/).length).toBeGreaterThan(0);expect(screen.getAllByText("選ばれる理由")).toHaveLength(2);expect(screen.getByRole("link",{name:"ホーム"})).toHaveAttribute("href","/")});
-it("keeps the global volume globe labels synced without rendering the removed copy block",()=>{renderHome();const language=screen.getByRole("combobox",{name:"Language"});const heroGlobe=screen.getByTestId("hero-global-volume-globe");expect(within(heroGlobe).queryByTestId("global-volume-copy")).not.toBeInTheDocument();expect(within(heroGlobe).getAllByTestId("globe-surface-label")).toHaveLength(3);fireEvent.change(language,{target:{value:"zh-CN"}});expect(within(heroGlobe).getAllByTestId("globe-surface-label")[0]).toHaveTextContent("全球交易");expect(heroGlobe).not.toHaveTextContent("Global savings activity");expect(heroGlobe).not.toHaveTextContent("Live routes show worldwide activity first")});
-it("opens the mobile menu and exposes all six languages",()=>{renderHome();expect(screen.getByLabelText("Open mobile menu")).toHaveAttribute("href","#mobile-menu-drawer");const drawer=screen.getByTestId("mobile-drawer");expect(drawer).toHaveAttribute("id","mobile-menu-drawer");for(const label of["EN","简体","繁体","日本語","한국어","ไทย"])expect(within(drawer).getByRole("button",{name:label})).toBeInTheDocument();expect(within(drawer).getAllByLabelText("Close mobile menu")[1]).toHaveAttribute("href","#home")});
+import { readFileSync } from "node:fs";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import Home from "@/app/page";
+import { LocaleProvider } from "@/i18n/locale-provider";
+const renderHome = () =>
+  render(
+    <LocaleProvider>
+      <Home />
+    </LocaleProvider>
+  );
+describe("finance home", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    delete process.env.NEXT_PUBLIC_MAINTENANCE_MODE;
+  });
+  it("always renders the finance home and never shows a maintenance page", () => {
+    process.env.NEXT_PUBLIC_MAINTENANCE_MODE = "true";
+    renderHome();
+    expect(
+      screen.queryByRole("heading", { name: "Service maintenance" })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/temporarily offline/i)).not.toBeInTheDocument();
+    expect(screen.getByTestId("desktop-home")).toBeInTheDocument();
+    expect(screen.getByTestId("mobile-home")).toBeInTheDocument();
+    expect(screen.getByTestId("top-market-ticker")).toBeInTheDocument();
+  });
+  it("uses separate responsive layouts with English as the default", () => {
+    renderHome();
+    const desktop = screen.getByTestId("desktop-home"),
+      mobile = screen.getByTestId("mobile-home");
+    expect(desktop).toHaveClass("hidden", "lg:block");
+    expect(mobile).toHaveClass("lg:hidden");
+    expect(
+      screen.getByRole("link", { name: "Blockchain Savings" })
+    ).toBeInTheDocument();
+    expect(within(mobile).getByLabelText("Mobile navigation")).toHaveClass(
+      "fixed"
+    );
+    expect(document.querySelectorAll("#home")).toHaveLength(1);
+    expect(document.querySelectorAll("#features")).toHaveLength(1);
+  });
+  it("shows flexible and smart contract rate tables without a flexible entry action", () => {
+    renderHome();
+    const commandCenter = screen.getByTestId("savings-command-center");
+    const tables = within(commandCenter).getAllByTestId("rate-table");
+    expect(tables).toHaveLength(4);
+    expect(
+      within(commandCenter).getAllByRole("heading", {
+        name: /Flexible Savings Rates/,
+      })
+    ).toHaveLength(2);
+    expect(
+      within(commandCenter).getAllByRole("heading", {
+        name: /Smart Contract Rates/,
+      })
+    ).toHaveLength(2);
+    expect(within(commandCenter).getAllByText("2.70%")).toHaveLength(2);
+    expect(within(commandCenter).getAllByText("11.00%")).toHaveLength(2);
+    expect(
+      within(commandCenter).getAllByTestId("rate-table-deposit-link")
+    ).toHaveLength(2);
+  });
+  it("keeps the promo carousel above the global volume globe and keeps all advantages", () => {
+    renderHome();
+    const promoSlides = screen.getAllByTestId("promo-banner-slide");
+    expect(promoSlides).toHaveLength(4);
+    expect(
+      screen.queryByTestId("desktop-global-volume-globe")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("mobile-global-volume-globe")
+    ).not.toBeInTheDocument();
+    const heroGlobe = screen.getByTestId("hero-global-volume-globe");
+    expect(
+      promoSlides[0].compareDocumentPosition(heroGlobe) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(heroGlobe).not.toHaveClass("panel");
+    expect(heroGlobe).toHaveClass("global-volume-hero");
+    expect(heroGlobe).not.toHaveTextContent("Blockchain Savings");
+    expect(heroGlobe).not.toHaveTextContent("Global savings activity");
+    expect(
+      within(heroGlobe).queryByTestId("global-volume-copy")
+    ).not.toBeInTheDocument();
+    expect(
+      within(heroGlobe).getAllByTestId("globe-proof-ribbon-item").length
+    ).toBeGreaterThan(4);
+    for (const layout of [
+      screen.getByTestId("desktop-home"),
+      screen.getByTestId("mobile-home"),
+    ]) {
+      const panel = within(layout).getByTestId("advantages-panel");
+      const firstButton = within(panel).getByRole("button", {
+        name: /01.*Rewards Program/,
+      });
+      expect(within(panel).getAllByRole("button")).toHaveLength(11);
+      fireEvent.click(firstButton);
+      expect(
+        within(panel).getByTestId(
+          `${
+            layout.dataset.testid === "desktop-home" ? "desktop" : "mobile"
+          }-advantage-body-01`
+        ).textContent
+      ).toBeTruthy();
+    }
+  });
+  it("applies the illuminated ticker treatment before the promo carousel and hero globe", () => {
+    renderHome();
+    const topTicker = screen.getByTestId("top-market-ticker");
+    const promoSlide = screen.getAllByTestId("promo-banner-slide")[0];
+    const heroGlobe = screen.getByTestId("hero-global-volume-globe");
+    expect(topTicker).toHaveClass(
+      "market-ticker-highlight",
+      "market-ticker-spotlight",
+      "market-ticker-top"
+    );
+    expect(
+      topTicker.compareDocumentPosition(promoSlide) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(
+      promoSlide.compareDocumentPosition(heroGlobe) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(
+      within(topTicker).getAllByTestId("ticker-value-pill").length
+    ).toBeGreaterThan(0);
+    expect(
+      within(topTicker).getAllByTestId("ticker-change-positive").length
+    ).toBeGreaterThan(0);
+    expect(
+      within(topTicker).getAllByTestId("ticker-change-negative").length
+    ).toBeGreaterThan(0);
+  });
+  it("keeps mobile advantages unchanged while refining the desktop advantages panel", () => {
+    renderHome();
+    const desktopPanel = within(screen.getByTestId("desktop-home")).getByTestId(
+      "advantages-panel"
+    );
+    const mobilePanel = within(screen.getByTestId("mobile-home")).getByTestId(
+      "advantages-panel"
+    );
+    expect(desktopPanel).toHaveClass("advantages-tech-tree-panel", "advantages-tree-desktop");
+    expect(mobilePanel).toHaveClass("advantages-tech-tree-panel");
+    const firstButton = within(desktopPanel).getByRole("button", {
+      name: /01.*Rewards Program/,
+    });
+    expect(firstButton).toHaveClass("tech-tree-node");
+    fireEvent.click(firstButton);
+    expect(firstButton).toHaveClass("tech-tree-node-active");
+    expect(
+      within(desktopPanel).getByTestId("desktop-advantage-body-01")
+    ).toHaveClass("tech-tree-detail");
+  });
+  it("renders the mobile advantages as a luminous technology tree", () => {
+    renderHome();
+    const mobilePanel = within(screen.getByTestId("mobile-home")).getByTestId(
+      "advantages-panel"
+    );
+    expect(mobilePanel).toHaveClass("advantages-tech-tree-panel");
+    expect(
+      within(mobilePanel).getByTestId("advantages-tech-tree-stage")
+    ).toBeInTheDocument();
+    expect(
+      within(mobilePanel).getByTestId("advantages-tech-tree-trunk")
+    ).toBeInTheDocument();
+    expect(
+      within(mobilePanel).getByTestId("advantages-tech-tree-roots")
+    ).toBeInTheDocument();
+    const nodes = within(mobilePanel).getAllByTestId(
+      "advantages-tech-tree-node"
+    );
+    expect(nodes).toHaveLength(11);
+    expect(nodes[0]).toHaveClass("tech-tree-node");
+    fireEvent.click(
+      within(mobilePanel).getByRole("button", {
+        name: /03.*How to stake USDC in your wallet/,
+      })
+    );
+    expect(
+      within(mobilePanel).getByTestId("mobile-advantage-body-03")
+    ).toHaveClass("tech-tree-detail");
+  });
+  it("shows all eleven advantages in the extended desktop tree", () => {
+    renderHome();
+    const desktop = screen.getByTestId("desktop-home");
+    const sidebar = within(desktop).getByTestId("desktop-sidebar");
+    const desktopPanel = within(sidebar).getByTestId("advantages-panel");
+    const mobilePanel = within(screen.getByTestId("mobile-home")).getByTestId(
+      "advantages-panel"
+    );
+    expect(desktopPanel).toHaveClass("advantages-tree-desktop");
+    expect(within(desktopPanel).getAllByRole("button")).toHaveLength(11);
+    expect(
+      within(sidebar).getByRole("button", { name: /11.*How to join/ })
+    ).toBeInTheDocument();
+    expect(mobilePanel).not.toHaveClass("advantages-tree-desktop");
+  });
+  it("removes the redundant savings flow monitor from the advantages sidebar", () => {
+    renderHome();
+    const sidebar = within(screen.getByTestId("desktop-home")).getByTestId(
+      "desktop-sidebar"
+    );
+    const panel = within(sidebar).getByTestId("advantages-panel");
+    expect(within(panel).queryByTestId("chain-flow-card")).not.toBeInTheDocument();
+  });
+  it("keeps the desktop lower layout compact without the redundant savings snapshot", () => {
+    renderHome();
+    const sidebar = within(screen.getByTestId("desktop-home")).getByTestId(
+      "desktop-sidebar"
+    );
+    expect(sidebar).toHaveClass("col-span-3");
+    expect(
+      within(sidebar).queryByTestId("savings-snapshot")
+    ).not.toBeInTheDocument();
+    expect(
+      within(screen.getByTestId("mobile-home")).queryByTestId(
+        "savings-snapshot"
+      )
+    ).not.toBeInTheDocument();
+  });
+  it("fills the desktop lower gap with a proof engine before the scrolling footer", () => {
+    renderHome();
+    const desktop = screen.getByTestId("desktop-home");
+    const proofMatrix = within(desktop).getByTestId("desktop-proof-matrix");
+    const benefits = within(desktop).getByTestId("benefits-bar");
+    const footer = within(desktop).getByTestId("desktop-flow-footer");
+    expect(proofMatrix).toHaveClass(
+      "savings-proof-matrix",
+      "savings-proof-engine"
+    );
+    expect(
+      within(proofMatrix).getByRole("heading", { name: "Savings Proof Engine" })
+    ).toBeInTheDocument();
+    expect(
+      within(proofMatrix).getByTestId("savings-proof-terminal")
+    ).toHaveTextContent("LIVE PROOF LAYER");
+    expect(
+      within(proofMatrix).getAllByTestId("savings-proof-node")
+    ).toHaveLength(5);
+    expect(
+      within(proofMatrix).getAllByTestId("savings-proof-metric")
+    ).toHaveLength(3);
+    expect(
+      within(proofMatrix).getAllByTestId("savings-proof-risk")
+    ).toHaveLength(3);
+    expect(
+      proofMatrix.compareDocumentPosition(benefits) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(
+      benefits.compareDocumentPosition(footer) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(proofMatrix).toHaveTextContent("Plan Match");
+    expect(proofMatrix).toHaveTextContent("Maturity Payout");
+    expect(proofMatrix).toHaveTextContent("Trace Layer");
+    expect(
+      within(footer).queryByTestId("desktop-proof-matrix")
+    ).not.toBeInTheDocument();
+    expect(within(footer).getAllByTestId("desktop-flow-lane")).toHaveLength(2);
+    expect(footer).toHaveTextContent("USDC settlement");
+    expect(footer).toHaveTextContent("Daily yield stream");
+    expect(
+      within(screen.getByTestId("mobile-home")).queryByTestId(
+        "desktop-flow-footer"
+      )
+    ).not.toBeInTheDocument();
+    expect(
+      within(screen.getByTestId("mobile-home")).queryByTestId(
+        "desktop-proof-matrix"
+      )
+    ).not.toBeInTheDocument();
+  });
+  it("places both rate tables below the globe with entry actions only on smart contract tables", () => {
+    renderHome();
+    const heroGlobe = screen.getByTestId("hero-global-volume-globe");
+    const commandCenter = screen.getByTestId("savings-command-center");
+    expect(
+      heroGlobe.compareDocumentPosition(commandCenter) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    const rates = within(commandCenter).getAllByTestId("rate-table");
+    const rateLinks = within(commandCenter).getAllByTestId(
+      "rate-table-deposit-link"
+    );
+    expect(rates).toHaveLength(4);
+    expect(rateLinks).toHaveLength(2);
+    expect(
+      rateLinks.every((link) => link.getAttribute("href") === "/savings-pool")
+    ).toBe(true);
+  });
+  it("moves the six-beam spotlight to the bottom of H5 while removing mobile benefit cards", () => {
+    renderHome();
+    const commandCenter = screen.getByTestId("savings-command-center");
+    expect(
+      within(commandCenter).queryByTestId("spotlight-hub")
+    ).not.toBeInTheDocument();
+    const mobile = screen.getByTestId("mobile-home");
+    const spotlight = within(mobile).getByTestId("spotlight-hub");
+    const coinSection = within(mobile)
+      .getByTestId("coin-grid")
+      .closest("section");
+    expect(coinSection).toBeTruthy();
+    expect(spotlight).toHaveClass("mobile-spotlight-hub", "lg:hidden");
+    expect(
+      coinSection!.compareDocumentPosition(spotlight) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(within(spotlight).getByTestId("spotlight-core")).toBeInTheDocument();
+    expect(within(spotlight).getAllByTestId("spotlight-beam")).toHaveLength(5);
+    for (const name of [
+      "Smart Contract",
+      "Mystery Box",
+      "Invite Friends",
+      "Multi-chain Proof",
+    ])
+      expect(
+        within(spotlight).getByRole("button", { name: new RegExp(name) })
+      ).toBeInTheDocument();
+    expect(
+      within(spotlight).queryByRole("button", { name: /Flexible Access/ })
+    ).not.toBeInTheDocument();
+    expect(
+      within(spotlight).getByRole("link", { name: /View Plans/ })
+    ).toHaveAttribute("href", "/savings-pool");
+    fireEvent.click(
+      within(spotlight).getByRole("button", { name: /Mystery Box/ })
+    );
+    expect(
+      within(spotlight).queryByRole("link", { name: /Preparing/ })
+    ).not.toBeInTheDocument();
+    expect(
+      within(spotlight).getByRole("button", { name: /Preparing/ })
+    ).toBeInTheDocument();
+    fireEvent.click(
+      within(spotlight).getByRole("button", { name: /Invite Friends/ })
+    );
+    expect(spotlight).toHaveTextContent(
+      "Non-high-net-worth members cannot share dividend vouchers"
+    );
+    expect(
+      within(spotlight).queryByRole("link", { name: /Unavailable/ })
+    ).not.toBeInTheDocument();
+    expect(
+      within(spotlight).getByRole("button", { name: /Unavailable/ })
+    ).toBeInTheDocument();
+    fireEvent.change(screen.getByRole("combobox", { name: "Language" }), {
+      target: { value: "zh-CN" },
+    });
+    const smartContractBeam = within(spotlight).getByRole("button", {
+      name: /智能合约/,
+    });
+    expect(smartContractBeam).toBeInTheDocument();
+    expect(
+      within(spotlight).getByRole("button", { name: /盲盒抽奖/ })
+    ).toBeInTheDocument();
+    fireEvent.click(smartContractBeam);
+    expect(
+      within(spotlight).getByRole("link", { name: /查看计划/ })
+    ).toHaveAttribute("href", "/savings-pool");
+    expect(within(spotlight).getByTestId("spotlight-active-panel")).toHaveClass(
+      "spotlight-active-panel"
+    );
+    const quick = within(commandCenter).getByTestId("quick-actions");
+    expect(quick).toHaveClass("hidden", "lg:grid");
+    expect(
+      within(mobile).queryByTestId("benefits-bar")
+    ).not.toBeInTheDocument();
+    expect(
+      within(screen.getByTestId("desktop-home")).getByTestId("benefits-bar")
+    ).toBeInTheDocument();
+  });
+  it("uses distinct functional destinations for navigation and keeps rewards as lightweight actions", () => {
+    renderHome();
+    const mainNav = screen.getByRole("navigation", { name: "Main navigation" });
+    expect(
+      within(mainNav).getByRole("link", { name: "Trade" })
+    ).toHaveAttribute("href", "/#features");
+    expect(
+      within(mainNav).getByRole("link", { name: "Savings" })
+    ).toHaveAttribute("href", "/savings-pool");
+    expect(
+      within(mainNav).getByRole("link", { name: "Finance" })
+    ).toHaveAttribute("href", "/loan");
+    expect(
+      screen.getByRole("link", { name: "ReceiveVoucher" })
+    ).toHaveAttribute("href", "/savings-pool");
+    expect(
+      screen.queryByRole("link", { name: "Start Savings" })
+    ).not.toBeInTheDocument();
+    expect(document.querySelector("#features")).toBeInTheDocument();
+    expect(document.querySelector("#mystery-box")).not.toBeInTheDocument();
+    expect(document.querySelector("#invite-friends")).not.toBeInTheDocument();
+    const commandCenter = screen.getByTestId("savings-command-center");
+    const mobileNav = screen.getByRole("navigation", {
+      name: "Mobile navigation",
+    });
+    expect(
+      within(mobileNav).getByRole("link", { name: /Trade/ })
+    ).toHaveAttribute("href", "/#features");
+    expect(
+      within(mobileNav).getByRole("link", { name: /Savings/ })
+    ).toHaveAttribute("href", "/savings-pool");
+    expect(
+      screen.queryByRole("link", { name: /Draw Now|Invite Now/ })
+    ).not.toBeInTheDocument();
+    expect(
+      within(commandCenter)
+        .getAllByRole("link", { name: /Smart Contract/ })
+        .some((link) => link.getAttribute("href") === "/savings-pool")
+    ).toBe(true);
+    expect(
+      within(commandCenter).queryByRole("link", {
+        name: /Liquidity Mining|Join Now/,
+      })
+    ).not.toBeInTheDocument();
+  });
+  it("opens distinct advantage bodies after switching every locale", () => {
+    renderHome();
+    const language = screen.getByRole("combobox", { name: "Language" });
+    for (const locale of ["en", "zh-CN", "zh-TW", "ja", "ko", "th"]) {
+      fireEvent.change(language, { target: { value: locale } });
+      const panel = within(screen.getByTestId("desktop-home")).getByTestId(
+        "advantages-panel"
+      );
+      const first = within(panel).getAllByRole("button")[0];
+      fireEvent.click(first);
+      const firstBody = within(panel).getByTestId(
+        "desktop-advantage-body-01"
+      ).textContent;
+      fireEvent.click(within(panel).getAllByRole("button")[1]);
+      const secondBody = within(panel).getByTestId(
+        "desktop-advantage-body-02"
+      ).textContent;
+      expect(firstBody).toBeTruthy();
+      expect(secondBody).toBeTruthy();
+      expect(firstBody).not.toBe(secondBody);
+    }
+  });
+  it("switches advantage body copy with the selected locale", () => {
+    renderHome();
+    const language = screen.getByRole("combobox", { name: "Language" });
+    const panel = within(screen.getByTestId("desktop-home")).getByTestId(
+      "advantages-panel"
+    );
+    fireEvent.change(language, { target: { value: "en" } });
+    fireEvent.click(within(panel).getAllByRole("button")[0]);
+    const englishBody = within(panel).getByTestId(
+      "desktop-advantage-body-01"
+    ).textContent;
+    expect(englishBody).toMatch(/eligible customers/i);
+    fireEvent.change(language, { target: { value: "ja" } });
+    const japaneseBody = within(panel).getByTestId(
+      "desktop-advantage-body-01"
+    ).textContent;
+    expect(japaneseBody).toBeTruthy();
+    expect(japaneseBody).not.toBe(englishBody);
+  });
+  it("removes the large reward cards so savings content stays primary", () => {
+    renderHome();
+    expect(screen.queryByTestId("feature-grid")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("feature-card-primary")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("feature-card-secondary")
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("8888 USDC")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Liquidity Mining|流动性挖矿/)
+    ).not.toBeInTheDocument();
+  });
+  it("switches shared command center and responsive content from the shared selector", () => {
+    renderHome();
+    fireEvent.change(screen.getByRole("combobox", { name: "Language" }), {
+      target: { value: "ja" },
+    });
+    expect(
+      screen.getAllByText(/スマートコントラクト|Smart Contract/).length
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByText("選ばれる理由")).toHaveLength(2);
+    expect(screen.getByRole("link", { name: "ホーム" })).toHaveAttribute(
+      "href",
+      "/"
+    );
+  });
+  it("keeps the global volume globe labels synced without rendering the removed copy block", () => {
+    renderHome();
+    const language = screen.getByRole("combobox", { name: "Language" });
+    const heroGlobe = screen.getByTestId("hero-global-volume-globe");
+    expect(
+      within(heroGlobe).queryByTestId("global-volume-copy")
+    ).not.toBeInTheDocument();
+    expect(
+      within(heroGlobe).getAllByTestId("globe-surface-label")
+    ).toHaveLength(3);
+    fireEvent.change(language, { target: { value: "zh-CN" } });
+    expect(
+      within(heroGlobe).getAllByTestId("globe-surface-label")[0]
+    ).toHaveTextContent("全球交易");
+    expect(heroGlobe).not.toHaveTextContent("Global savings activity");
+    expect(heroGlobe).not.toHaveTextContent(
+      "Live routes show worldwide activity first"
+    );
+  });
+  it("opens the mobile menu and exposes all six languages", () => {
+    renderHome();
+    expect(screen.getByLabelText("Open mobile menu")).toHaveAttribute(
+      "href",
+      "#mobile-menu-drawer"
+    );
+    const drawer = screen.getByTestId("mobile-drawer");
+    expect(drawer).toHaveAttribute("id", "mobile-menu-drawer");
+    for (const label of ["EN", "简体", "繁体", "日本語", "한국어", "ไทย"])
+      expect(
+        within(drawer).getByRole("button", { name: label })
+      ).toBeInTheDocument();
+    expect(
+      within(drawer).getAllByLabelText("Close mobile menu")[1]
+    ).toHaveAttribute("href", "#home");
+  });
 });
-it("switches the mobile command card copy with the selected locale while keeping desktop content wrapped",()=>{renderHome();const language=screen.getByRole("combobox",{name:"Language"});const commandCenter=screen.getByTestId("savings-command-center");const mobileMystery=within(commandCenter).getByTestId("mobile-mystery-card");const desktopContent=within(commandCenter).getByTestId("desktop-command-center-content");expect(mobileMystery).toHaveTextContent("Mystery Box");expect(mobileMystery).toHaveClass("lg:hidden");expect(desktopContent).toHaveClass("hidden","lg:block");expect(within(desktopContent).getByRole("spinbutton",{name:"Deposit amount"})).toBeInTheDocument();fireEvent.change(language,{target:{value:"zh-CN"}});expect(mobileMystery).toHaveTextContent("盲盒抽奖");expect(mobileMystery).toHaveTextContent("福利活动");expect(desktopContent).toHaveTextContent("储蓄数据舱");expect(desktopContent).toHaveTextContent("智能合约");expect(within(desktopContent).getByRole("spinbutton",{name:"存入金额"})).toBeInTheDocument();expect(commandCenter).not.toHaveTextContent("Flexible Savings")});
-it("keeps the mobile command center from overlapping the globe copy",()=>{const css=readFileSync("src/app/globals.css","utf8");expect(css).not.toMatch(/\.savings-command-center\s*\{[^}]*margin-top:\s*-/)});
+it("keeps the desktop rate content wrapped without the removed savings warehouse controls", () => {
+  renderHome();
+  const commandCenter = screen.getByTestId("savings-command-center");
+  const desktopContent = within(commandCenter).getByTestId(
+    "desktop-command-center-content"
+  );
+  expect(desktopContent).toHaveClass("hidden", "lg:block");
+  expect(
+    within(desktopContent).queryByRole("spinbutton")
+  ).not.toBeInTheDocument();
+  expect(within(desktopContent).getAllByTestId("rate-table")).toHaveLength(2);
+});
+it("keeps the mobile command center from overlapping the globe copy", () => {
+  const css = readFileSync("src/app/globals.css", "utf8");
+  expect(css).not.toMatch(/\.savings-command-center\s*\{[^}]*margin-top:\s*-/);
+});

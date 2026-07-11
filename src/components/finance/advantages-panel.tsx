@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ChainFlowCard } from "@/components/finance/chain-flow-card";
 import { advantages } from "@/constants/finance";
 import { advantageBodies } from "@/i18n/advantage-bodies";
 import { getFinanceCopy } from "@/i18n/finance-copy";
@@ -30,7 +29,7 @@ export function AdvantagesPanel({
   instance: "desktop" | "mobile";
   className?: string;
 }) {
-  const desktop = instance === "desktop";
+  const desktop = instance === "desktop" && !className.includes("advantages-tree-desktop");
   const [openId, setOpenId] = useState<string | null>(null);
   const { locale } = useLocale();
   const c = getFinanceCopy(locale);
@@ -78,7 +77,6 @@ export function AdvantagesPanel({
               );
             })}
           </div>
-          <ChainFlowCard compact />
         </>
       ) : (
         <div data-testid="advantages-tech-tree-stage" className="advantages-tech-tree-stage">

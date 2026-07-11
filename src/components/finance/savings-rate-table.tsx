@@ -18,11 +18,13 @@ const depositCopy = {
 export function SavingsRateTable({
   rates,
   tone,
+  showAction = true,
 }: {
   title: string;
   note: string;
   rates: SavingsRate[];
   tone: "violet" | "cyan";
+  showAction?: boolean;
 }) {
   const { locale } = useLocale();
   const c = getFinanceCopy(locale).rates;
@@ -69,13 +71,13 @@ export function SavingsRateTable({
             ))}
           </tbody>
         </table>
-        <a
+        {showAction ? <a
           data-testid="rate-table-deposit-link"
           href={actionLinks.fixedSavings}
           className={`rate-table-deposit-link ${fixed ? "rate-table-deposit-link-fixed" : "rate-table-deposit-link-flexible"}`}
         >
           {ctaLabel}
-        </a>
+        </a> : null}
       </div>
       <div data-testid="rate-illustration" className="pointer-events-none absolute -bottom-4 -right-3 hidden opacity-35 2xl:block">
         <GlowIcon name={fixed ? "vault" : "coins"} tone={fixed ? "purple" : "cyan"} size="xl" />
