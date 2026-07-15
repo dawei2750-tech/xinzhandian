@@ -68,4 +68,3 @@ for (const workflow of cases) {
     assert.doesNotMatch(source, /--token|--secret|HB_MAINTENANCE_PAT=/u);
   });
 }
-

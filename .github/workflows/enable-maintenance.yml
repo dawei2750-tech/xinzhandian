@@ -36,4 +36,3 @@ jobs:
 
       - name: Enable maintenance and verify production
         run: node main-site/scripts/maintenance-remote.mjs --mode enable --main-dir main-site --admin-dir admin-site
-

@@ -36,4 +36,3 @@ jobs:
 
       - name: Restore sites and verify production
         run: node main-site/scripts/maintenance-remote.mjs --mode restore --main-dir main-site --admin-dir admin-site
-
