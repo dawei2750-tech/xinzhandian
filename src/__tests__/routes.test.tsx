@@ -245,6 +245,18 @@ describe("localized destination pages", () => {
         "eth_sendTransaction",
       ]),
     );
+    fireEvent.click(within(deposit).getByRole("button", { name: "Smart Contract" }));
+    expect(screen.getByRole("tab", { name: "Plan" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByTestId("contract-plan-panel")).toBeInTheDocument();
+  });
+  it("restores the deposit tab from the URL after a wallet-triggered refresh", () => {
+    window.history.pushState({}, "", "/savings-pool?tab=deposit");
+
+    view(<SavingsPoolPage />);
+
+    expect(screen.getByRole("tab", { name: "Deposit" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByTestId("contract-deposit-panel")).toBeInTheDocument();
+    expect(screen.queryByTestId("pool-data-panel")).not.toBeInTheDocument();
   });
   it("shows a direct wallet error when the injected provider is not ready", async () => {
     Object.defineProperty(window, "ethereum", {

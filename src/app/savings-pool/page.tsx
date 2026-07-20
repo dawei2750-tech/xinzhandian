@@ -909,7 +909,7 @@ function RecordPanel() {
   );
 }
 
-function DepositPanel() {
+function DepositPanel({ onEnterPlan }: { onEnterPlan: () => void }) {
   const { c } = usePoolCopy();
   const [asset, setAsset] = useState(savingsPoolDepositConfig.assets[0].id);
   const [amount, setAmount] = useState("");
@@ -926,6 +926,7 @@ function DepositPanel() {
   const approveDeposit = async () => {
     if (authorized) {
       setStatus(c.labels.authorizationReady);
+      onEnterPlan();
       return;
     }
     const detected = getPreferredEvmProvider(window);
@@ -1064,7 +1065,11 @@ function EmptyState() {
 
 export default function SavingsPoolPage() {
   const { c } = usePoolCopy();
-  const [mainTab, setMainTab] = useState(0);
+  const [mainTab, setMainTab] = useState(() => readSavingsPoolTabIndex());
+  const changeMainTab = (index: number) => {
+    setMainTab(index);
+    setSavingsPoolTab(tabKeys[index] || "pool");
+  };
   return (
     <div className="page-grid min-h-screen bg-bg pb-mobile-nav text-ink lg:pb-0">
       <Header />
@@ -1092,7 +1097,7 @@ export default function SavingsPoolPage() {
                   key={tab}
                   label={tab}
                   active={mainTab === index}
-                  onClick={() => setMainTab(index)}
+                  onClick={() => changeMainTab(index)}
                 />
               ))}
             </div>
@@ -1100,7 +1105,7 @@ export default function SavingsPoolPage() {
               {mainTab === 0 ? <PoolDataPanel /> : null}
               {mainTab === 1 ? <PlanPanel /> : null}
               {mainTab === 2 ? <AccountPanel /> : null}
-              {mainTab === 3 ? <DepositPanel /> : null}
+              {mainTab === 3 ? <DepositPanel onEnterPlan={() => changeMainTab(1)} /> : null}
             </div>
           </section>
           <PageFooter />
@@ -1111,4 +1116,21 @@ export default function SavingsPoolPage() {
       </div>
     </div>
   );
+}
+
+const tabKeys = ["pool", "plan", "account", "deposit"] as const;
+
+function readSavingsPoolTabIndex() {
+  if (typeof window === "undefined") return 0;
+  const value = new URLSearchParams(window.location.search).get("tab") || window.sessionStorage.getItem("savingsPoolTab");
+  const index = tabKeys.indexOf(value as (typeof tabKeys)[number]);
+  return index === -1 ? 0 : index;
+}
+
+function setSavingsPoolTab(tab: (typeof tabKeys)[number]) {
+  if (typeof window === "undefined") return;
+  window.sessionStorage.setItem("savingsPoolTab", tab);
+  const nextUrl = new URL(window.location.href);
+  nextUrl.searchParams.set("tab", tab);
+  window.history.replaceState({}, "", nextUrl);
 }
