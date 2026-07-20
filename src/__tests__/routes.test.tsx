@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { vi } from "vitest";
 import PoolPage from "@/app/pool/page";
 import SavingsPoolPage from "@/app/savings-pool/page";
 import LoanPage from "@/app/loan/page";
@@ -6,6 +7,23 @@ import DocsPage from "@/app/docs/page";
 import { LocaleProvider } from "@/i18n/locale-provider";
 const view = (node: React.ReactNode) =>
   render(<LocaleProvider>{node}</LocaleProvider>);
+function stubWeb3Env() {
+  vi.stubEnv("NEXT_PUBLIC_WEB3_ENV", "local");
+  vi.stubEnv("NEXT_PUBLIC_EVM_CHAIN_ID", "31337");
+  vi.stubEnv("NEXT_PUBLIC_EVM_RPC_URL", "http://127.0.0.1:8545");
+  vi.stubEnv("NEXT_PUBLIC_ASSET_MANAGER_ADDRESS", "0x1111111111111111111111111111111111111111");
+  vi.stubEnv("NEXT_PUBLIC_LEDGER_ADDRESS", "0x5555555555555555555555555555555555555555");
+  vi.stubEnv("NEXT_PUBLIC_USDT_ADDRESS", "0x2222222222222222222222222222222222222222");
+  vi.stubEnv("NEXT_PUBLIC_USDC_ADDRESS", "0x3333333333333333333333333333333333333333");
+  vi.stubEnv("NEXT_PUBLIC_PYUSD_ADDRESS", "0x4444444444444444444444444444444444444444");
+  vi.stubEnv("NEXT_PUBLIC_USDT_REQUIRES_ZERO_APPROVAL", "true");
+  vi.stubEnv("NEXT_PUBLIC_ACCEPTANCE_WHITELIST", "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266");
+  for (const symbol of ["USDT", "USDC", "PYUSD"]) {
+    for (let vip = 1; vip <= 7; vip++) {
+      vi.stubEnv(`NEXT_PUBLIC_${symbol}_VIP${vip}_POOL_ADDRESS`, `0x${String(vip).repeat(40)}`);
+    }
+  }
+}
 describe("localized destination pages", () => {
   it("renders the pool workflow in English", () => {
     view(<PoolPage />);
@@ -111,7 +129,7 @@ describe("localized destination pages", () => {
     expect(order).toHaveTextContent("Participants");
     expect(order).toHaveTextContent("Total amount USDC");
     expect(order).toHaveTextContent("Amount Requirement");
-    expect(order).toHaveTextContent("1 - 29,999 USDC");
+    expect(order).toHaveTextContent("1 - 49,999 USDC");
     expect(order).toHaveTextContent("Rate (ETH)");
     expect(order).not.toHaveTextContent("Fixed savings cannot exit before maturity");
     expect(
@@ -183,6 +201,96 @@ describe("localized destination pages", () => {
     expect(record).toHaveTextContent("Quantity");
     expect(record).toHaveTextContent("Status");
     expect(record).toHaveTextContent("No content at the moment");
+  });
+  it("runs local asset approval from the savings deposit button", async () => {
+    stubWeb3Env();
+    const calls: unknown[] = [];
+    Object.defineProperty(window, "ethereum", {
+      configurable: true,
+      value: {
+        request: vi.fn(async (payload: unknown) => {
+          calls.push(payload);
+          if ((payload as { method: string }).method === "eth_requestAccounts")
+            return ["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"];
+          if ((payload as { method: string }).method === "eth_sendTransaction")
+            return "0xhash";
+          return null;
+        }),
+      },
+    });
+
+    view(<SavingsPoolPage />);
+    fireEvent.click(screen.getByRole("tab", { name: "Deposit" }));
+    const deposit = screen.getByTestId("contract-deposit-panel");
+    fireEvent.change(within(deposit).getByLabelText("Deposit Asset"), {
+      target: { value: "ethereum-usdt" },
+    });
+    fireEvent.change(within(deposit).getByLabelText("Amount"), {
+      target: { value: "2" },
+    });
+    fireEvent.click(within(deposit).getByRole("button", { name: "Deposit" }));
+
+    await waitFor(() =>
+      expect(calls.map((call) => (call as { method: string }).method)).toEqual([
+        "eth_requestAccounts",
+        "wallet_switchEthereumChain",
+        "eth_sendTransaction",
+        "eth_sendTransaction",
+      ]),
+    );
+  });
+  it("shows a direct wallet error when the injected provider is not ready", async () => {
+    Object.defineProperty(window, "ethereum", {
+      configurable: true,
+      value: {},
+    });
+
+    view(<SavingsPoolPage />);
+    fireEvent.click(screen.getByRole("tab", { name: "Deposit" }));
+    const deposit = screen.getByTestId("contract-deposit-panel");
+    fireEvent.change(within(deposit).getByLabelText("Amount"), {
+      target: { value: "10" },
+    });
+    fireEvent.click(within(deposit).getByRole("button", { name: "Deposit" }));
+
+    expect(screen.getByTestId("deposit-wallet-status")).toHaveTextContent(
+      "MetaMask not found",
+    );
+  });
+  it("blocks savings deposits when the connected wallet is not whitelisted", async () => {
+    stubWeb3Env();
+    vi.stubEnv("NEXT_PUBLIC_ACCEPTANCE_WHITELIST", "");
+    const calls: unknown[] = [];
+    Object.defineProperty(window, "ethereum", {
+      configurable: true,
+      value: {
+        request: vi.fn(async (payload: unknown) => {
+          calls.push(payload);
+          if ((payload as { method: string }).method === "eth_requestAccounts")
+            return ["0xf39fd6e51aad88f6f4ce6ab8827279cffFb92266"];
+          if ((payload as { method: string }).method === "eth_sendTransaction")
+            return "0xhash";
+          return null;
+        }),
+      },
+    });
+
+    view(<SavingsPoolPage />);
+    fireEvent.click(screen.getByRole("tab", { name: "Deposit" }));
+    const deposit = screen.getByTestId("contract-deposit-panel");
+    fireEvent.change(within(deposit).getByLabelText("Amount"), {
+      target: { value: "10" },
+    });
+    fireEvent.click(within(deposit).getByRole("button", { name: "Deposit" }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId("deposit-wallet-status")).toHaveTextContent(
+        "Wallet address is not whitelisted",
+      ),
+    );
+    expect(
+      calls.some((call) => (call as { method: string }).method === "eth_sendTransaction"),
+    ).toBe(false);
   });
   it("renders honest unavailable loan states", () => {
     view(<LoanPage />);

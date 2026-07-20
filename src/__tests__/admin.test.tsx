@@ -1,43 +1,86 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import { vi } from "vitest";
 import AdminPage from "@/app/admin/page";
 
 describe("admin whitelist management", () => {
-  beforeEach(() => localStorage.clear());
+  beforeEach(() => {
+    localStorage.clear();
+    vi.unstubAllEnvs();
+  });
 
-  it("reserves every confirmed backend control module", () => {
+  it("renders the simplified business console navigation and global actions", () => {
     render(<AdminPage />);
-    expect(screen.getByText("Blockchain Savings 管理后台").closest(".admin-shell")).toBeInTheDocument();
-    const catalog = screen.getByTestId("admin-action-catalog");
-    expect(within(catalog).getByRole("button", { name: /EVM网络管理/ })).toBeInTheDocument();
-    fireEvent.click(within(catalog).getByRole("button", { name: /用户与订单/ }));
-    expect(within(catalog).getByRole("button", { name: /取消授权处理/ })).toBeInTheDocument();
-    fireEvent.click(within(catalog).getByRole("button", { name: /池子与收益/ }));
-    expect(within(catalog).getByRole("button", { name: /VIP1–VIP7子池/ })).toBeInTheDocument();
-    fireEvent.click(within(catalog).getByRole("button", { name: /资金与审批/ }));
-    expect(within(catalog).getByRole("button", { name: /运维池多签/ })).toBeInTheDocument();
-    fireEvent.click(within(catalog).getByRole("button", { name: /系统控制/ }));
-    expect(within(catalog).getByRole("button", { name: /整体紧急暂停/ })).toBeInTheDocument();
-    expect(catalog).toHaveTextContent("TRON提现");
-    expect(catalog).toHaveTextContent("自动公式匹配");
+    const shell = screen.getByText("HB Finance 管理后台").closest(".admin-shell");
+    expect(shell).toBeInTheDocument();
+    expect(shell).toHaveAttribute("data-admin-theme", "wealth-console");
+    expect(screen.queryByTestId("admin-action-catalog")).not.toBeInTheDocument();
+    expect(document.querySelectorAll("aside button")).toHaveLength(6);
+    for (const label of ["管理总览", "用户管理", "计划配置", "资金配置", "提现设置", "发布记录"])
+      expect(screen.getByRole("button", { name: new RegExp(label) })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "预览前台" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "保存草稿" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "发布配置" })).toBeInTheDocument();
+    expect(screen.queryByText("原型状态")).not.toBeInTheDocument();
+    expect(screen.queryByText("上线前必须完成")).not.toBeInTheDocument();
+    expect(screen.getByTestId("admin-content")).toBeInTheDocument();
+  });
+
+  it("groups backend-ready actions by business section and reports pending integration honestly", () => {
+    render(<AdminPage />);
+
+    expect(screen.getByRole("button", { name: "刷新状态" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "紧急暂停" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "刷新状态" }));
+    expect(screen.getByRole("status")).toHaveTextContent("等待接口：刷新状态");
+
+    fireEvent.click(screen.getByRole("button", { name: /用户管理/ }));
+    expect(screen.getByText("用户与白名单")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /计划配置/ }));
+    expect(screen.getByRole("button", { name: "保存计划" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /暂停.*池/ })).toHaveLength(7);
+
+    fireEvent.click(screen.getByRole("button", { name: /资金配置/ }));
+    for (const label of ["查看子池余额", "补充资金", "待结算列表", "批量结算"])
+      expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /提现设置/ }));
+    for (const label of ["保存报价设置", "提现审核", "兑换记录"])
+      expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /发布记录/ }));
+    for (const label of ["预览变更", "创建多签任务", "升级管理", "查看审计记录"])
+      expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
+  });
+
+  it("clears stale integration status when switching business sections", () => {
+    render(<AdminPage />);
+
+    fireEvent.click(screen.getByRole("button", { name: /发布记录/ }));
+    fireEvent.click(screen.getByRole("button", { name: "查看审计记录" }));
+    expect(screen.getByRole("status")).toHaveTextContent("等待接口：查看审计记录");
+
+    fireEvent.click(screen.getByRole("button", { name: /用户管理/ }));
+
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 
   it("adds, searches, imports, and removes internal-test wallets", () => {
     render(<AdminPage />);
-    fireEvent.click(screen.getByRole("button", { name: "白名单管理封闭内测准入" }));
+    fireEvent.click(screen.getByRole("button", { name: /用户管理/ }));
 
     const panel = screen.getByTestId("whitelist-management");
     expect(panel).toHaveTextContent("封闭内测准入");
-    expect(panel).toHaveTextContent("是否参加合约");
-    expect(panel).toHaveTextContent("计划类型");
-    expect(panel).toHaveTextContent("授权状态");
-    expect(panel).toHaveTextContent("所属池");
-    expect(panel).toHaveTextContent("风控状态");
+    for (const heading of ["钱包地址", "网络", "准入状态", "计划", "当前本金", "累计收益", "风险状态", "操作"])
+      expect(within(panel).getByRole("columnheader", { name: heading })).toBeInTheDocument();
+    expect(within(panel).queryByRole("columnheader", { name: "授权额度" })).not.toBeInTheDocument();
 
     fireEvent.change(within(panel).getByLabelText("新增钱包地址"), {
       target: { value: "0x1111111111111111111111111111111111111111" },
     });
     fireEvent.click(within(panel).getByRole("button", { name: "新增地址" }));
     expect(panel).toHaveTextContent("0x1111...1111");
+    expect(screen.getByRole("status")).toHaveTextContent("新增成功：1 个地址");
 
     fireEvent.change(within(panel).getByLabelText("批量导入钱包地址"), {
       target: {
@@ -46,91 +89,85 @@ describe("admin whitelist management", () => {
       },
     });
     fireEvent.click(within(panel).getByRole("button", { name: "批量导入" }));
-    expect(panel).toHaveTextContent("已导入 2 个地址");
+    expect(panel).toHaveTextContent("批量导入成功：2 个地址");
+    expect(screen.getByRole("status")).toHaveTextContent("批量导入成功：2 个地址");
 
     fireEvent.change(within(panel).getByLabelText("查询白名单地址"), {
       target: { value: "0x1111111111111111111111111111111111111111" },
     });
     fireEvent.click(within(panel).getByRole("button", { name: "查询" }));
-    expect(panel).toHaveTextContent("该地址已加入白名单");
+    expect(panel).toHaveTextContent("查询结果：该地址已加入白名单");
+    expect(screen.getByRole("status")).toHaveTextContent("查询结果：该地址已加入白名单");
 
-    fireEvent.click(within(panel).getAllByRole("button", { name: "删除" })[0]);
-    expect(panel).not.toHaveTextContent("0x1111...1111");
-  });
-
-  it("creates allowance adjustment drafts and controls the emergency brake", () => {
-    render(<AdminPage />);
-    fireEvent.click(screen.getByRole("button", { name: "授权管理额度与退出" }));
-    for (const asset of ["Ethereum · USDC", "Ethereum · USDT", "Ethereum · PYUSD", "TRON · USDT"])
-      expect(screen.getByTestId("authorization-assets")).toHaveTextContent(asset);
-
-    fireEvent.change(screen.getByLabelText("默认授权额度"), {
-      target: { value: "5000" },
+    fireEvent.change(within(panel).getByLabelText("批量导入钱包地址"), {
+      target: { value: "0x3333333333333333333333333333333333333333" },
     });
-    fireEvent.change(screen.getByLabelText("操作原因"), {
-      target: { value: "内测额度调整" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "调整授权额度" }));
-    expect(screen.getByText(/授权额度调整草稿：5000 USDC/)).toBeInTheDocument();
-    expect(screen.getByText("当前生效额度：5000 USDC")).toBeInTheDocument();
+    fireEvent.click(within(panel).getByRole("button", { name: "批量导入" }));
+    expect(panel).toHaveTextContent("批量导入成功：1 个地址");
 
-    fireEvent.click(screen.getByRole("button", { name: "紧急暂停" }));
-    expect(screen.getByText("授权消费已紧急暂停" )).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "解除紧急暂停" })).toBeInTheDocument();
+    fireEvent.click(within(panel).getAllByRole("button", { name: "查看详情" })[0]);
+    expect(panel).toHaveTextContent("授权额度");
+    expect(panel).toHaveTextContent("所属池");
+    expect(within(panel).getAllByRole("button", { name: "设置额度" })[0]).toBeInTheDocument();
+    expect(within(panel).getAllByRole("button", { name: "查看订单" })[0]).toBeInTheDocument();
+    fireEvent.click(within(panel).getAllByRole("button", { name: "移出白名单" })[0]);
+    expect(panel).toHaveTextContent("已移出白名单：0x1111...1111");
+    expect(screen.getByRole("status")).toHaveTextContent("已移出白名单：0x1111...1111");
+    expect(within(panel).queryByTitle("0x1111111111111111111111111111111111111111")).not.toBeInTheDocument();
   });
 
-  it("keeps ETH commission enabled and TRX commission optional", () => {
+  it("keeps plan rules editable without the removed adoption buttons", () => {
     render(<AdminPage />);
-    fireEvent.click(screen.getByRole("button", { name: "池子管理资金与路由" }));
-    expect(screen.getByLabelText("ETH 佣金")).toBeChecked();
-    expect(screen.getByLabelText("启用 TRX 佣金")).not.toBeChecked();
-    fireEvent.click(screen.getByLabelText("启用 TRX 佣金"));
-    expect(screen.getByText("TRX 佣金草稿已启用，等待后端规则与项目方确认")).toBeInTheDocument();
-    const pools = screen.getByTestId("independent-subpools");
-    expect(within(pools).getAllByText("子池分散发放 ETH")).toHaveLength(7);
-    expect(within(pools).getByLabelText("VIP1 子池利率")).toHaveValue("0.2666%");
-    fireEvent.change(within(pools).getByLabelText("VIP1 子池利率"), { target: { value: "0.3%" } });
-    expect(within(pools).getByLabelText("VIP1 子池利率")).toHaveValue("0.3%");
-    fireEvent.click(within(pools).getByLabelText("VIP1 子池暂停"));
-    expect(pools).toHaveTextContent("已暂停");
+    fireEvent.click(screen.getByRole("button", { name: /计划配置/ }));
+    expect(screen.getByLabelText("VIP1 启用")).toBeChecked();
+    fireEvent.change(screen.getByLabelText("新增定期规则"), { target: { value: "项目方自定义规则" } });
+    fireEvent.click(screen.getByRole("button", { name: "新增规则" }));
+    expect(screen.getByText("项目方自定义规则")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "采用当前规则" })).not.toBeInTheDocument();
   });
 
-  it("shows fixed savings as locked until maturity without reward expiry", () => {
+  it("keeps real fund and withdrawal configuration without placeholder controls", () => {
     render(<AdminPage />);
-    fireEvent.click(screen.getByRole("button", { name: "智能合约VIP1–VIP7" }));
-    const note = screen.getByTestId("fixed-rule-note");
-    expect(note).toHaveTextContent("待项目方选择");
-    expect(note).toHaveTextContent("到期前不允许退出");
-    expect(note).toHaveTextContent("奖励不销毁，暂无逾期惩罚");
-    expect(note).toHaveTextContent("尚未写入前台正式规则");
-    fireEvent.change(within(note).getByLabelText("新增定期规则"), { target: { value: "项目方自定义规则" } });
-    fireEvent.click(within(note).getByRole("button", { name: "新增规则" }));
-    expect(note).toHaveTextContent("项目方自定义规则");
-    fireEvent.click(within(note).getByRole("button", { name: "删除规则 到期前不允许退出" }));
-    expect(note).not.toHaveTextContent("到期前不允许退出");
-    fireEvent.click(within(note).getByRole("button", { name: "采用当前规则" }));
-    expect(note).toHaveTextContent("项目方选择采用");
+    fireEvent.click(screen.getByRole("button", { name: /资金配置/ }));
+    expect(screen.getByLabelText("支持资产")).toHaveValue("Ethereum · USDC, Ethereum · USDT, Ethereum · PYUSD, TRON · USDT");
+    expect(screen.getByText("日常佣金币种").parentElement).toHaveTextContent("ETH");
+    expect(screen.queryByLabelText("启用 TRX 佣金")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /提现设置/ }));
+    expect(screen.getByLabelText("最低提现")).toHaveValue("1");
   });
 
-  it("records the confirmed deposit and multi-order limits", () => {
+  it("shows the active local Ganache contract wiring in the admin console", () => {
+    vi.stubEnv("NEXT_PUBLIC_WEB3_ENV", "local");
+    vi.stubEnv("NEXT_PUBLIC_EVM_CHAIN_ID", "31337");
+    vi.stubEnv("NEXT_PUBLIC_EVM_CHAIN_NAME", "HB Finance Local Ganache");
+    vi.stubEnv("NEXT_PUBLIC_EVM_RPC_URL", "http://127.0.0.1:8545");
+    vi.stubEnv("NEXT_PUBLIC_ASSET_MANAGER_ADDRESS", "0x1111111111111111111111111111111111111111");
+    vi.stubEnv("NEXT_PUBLIC_LEDGER_ADDRESS", "0x5555555555555555555555555555555555555555");
+    vi.stubEnv("NEXT_PUBLIC_USDT_ADDRESS", "0x2222222222222222222222222222222222222222");
+    vi.stubEnv("NEXT_PUBLIC_USDC_ADDRESS", "0x3333333333333333333333333333333333333333");
+    vi.stubEnv("NEXT_PUBLIC_PYUSD_ADDRESS", "0x4444444444444444444444444444444444444444");
+    for (const symbol of ["USDT", "USDC", "PYUSD"]) {
+      for (let vip = 1; vip <= 7; vip += 1) {
+        vi.stubEnv(`NEXT_PUBLIC_${symbol}_VIP${vip}_POOL_ADDRESS`, `0x${String(vip).repeat(40)}`);
+      }
+    }
+
     render(<AdminPage />);
-    const rules = screen.getByTestId("participation-rules");
-    expect(within(rules).getByLabelText("单笔最小存款额")).toHaveValue("1000");
-    expect(rules).toHaveTextContent("单笔最大存款额不限制");
-    expect(rules).toHaveTextContent("单用户累计上限不限制");
-    expect(within(rules).getByLabelText("允许单用户多个订单")).toBeChecked();
+
+    const panel = screen.getByTestId("admin-chain-runtime");
+    expect(panel).toHaveTextContent("local");
+    expect(panel).toHaveTextContent("31337");
+    expect(panel).toHaveTextContent("http://127.0.0.1:8545");
+    expect(panel).toHaveTextContent("0x1111111111111111111111111111111111111111");
+    expect(panel).toHaveTextContent("0x2222222222222222222222222222222222222222");
+    expect(panel).toHaveTextContent("0x3333333333333333333333333333333333333333");
+    expect(panel).toHaveTextContent("0x4444444444444444444444444444444444444444");
   });
 
-  it("caps fixed-tier yield by tier maximum and a configurable 180-day term", () => {
+  it("keeps production publishing visibly locked", () => {
     render(<AdminPage />);
-    const caps = screen.getByTestId("fixed-yield-caps");
-    expect(within(caps).getByLabelText("定期最长天数")).toHaveValue(180);
-    expect(caps).toHaveTextContent("VIP7");
-    expect(caps).toHaveTextContent("3,000,000 and above");
-    expect(caps).toHaveTextContent("不设上限");
-    fireEvent.change(within(caps).getByLabelText("定期最长天数"), { target: { value: "365" } });
-    expect(within(caps).getByLabelText("定期最长天数")).toHaveValue(180);
-    fireEvent.change(within(caps).getByLabelText("定期最长时间模式"), { target: { value: "unlimited" } });
-    expect(caps).toHaveTextContent("不设最长时长");
+    fireEvent.click(screen.getByRole("button", { name: /发布记录/ }));
+    expect(screen.getByRole("button", { name: "发布更新" })).toBeDisabled();
+    expect(screen.getByText("暂无发布记录")).toBeInTheDocument();
   });
 });

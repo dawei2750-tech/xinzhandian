@@ -1,0 +1,3 @@
+export const INDEPENDENT_POOL_FACTORY =
+  process.env.NEXT_PUBLIC_POOL_FACTORY_ADDRESS ||
+  "";

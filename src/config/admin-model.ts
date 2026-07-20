@@ -29,7 +29,7 @@ export type AdminConfig = {
   fixedYieldCapRules: { termMode: "limited" | "unlimited"; maximumTermDays: string };
   fixedRules: { status: "pending" | "adopted" | "deferred"; items: string[] };
   deposit: { assets: string[]; fallbackPool: string; activePlanRouting: boolean };
-  withdrawal: { asset: string; minimumUsdc: string; dailyLimit: string; arrivalHours: string };
+  withdrawal: { asset: string; minimumUsdc: string; dailyLimit: string; arrivalHours: string; priceMode: "realtime" | "custom"; customUsdcRate: string };
   pools: { flexiblePool: string; temporaryPool: string; rewardPool: string; vipSubPools: string; paused: boolean };
   commission: { ethEnabled: true; trxEnabled: boolean };
   authorization: { assets: string[]; defaultUsdc: string; confirmedUsdc: string; minimumUsdc: string; cancellationExitsPlan: boolean; spenderStatus: string; emergencyPause: boolean };
@@ -44,7 +44,7 @@ export const initialAdminConfig: AdminConfig = {
   fixedYieldCapRules: { termMode: "limited", maximumTermDays: "180" },
   fixedRules: { status: "pending", items: ["到期前不允许退出", "到期后奖励不销毁，暂无逾期惩罚"] },
   deposit: { assets: ["Ethereum · USDC", "Ethereum · USDT", "Ethereum · PYUSD", "TRON · USDT"], fallbackPool: "Temporary Holding Pool", activePlanRouting: true },
-  withdrawal: { asset: "USDC", minimumUsdc: "1", dailyLimit: "5", arrivalHours: "24" },
+  withdrawal: { asset: "USDC", minimumUsdc: "1", dailyLimit: "5", arrivalHours: "24", priceMode: "realtime", customUsdcRate: "1" },
   pools: { flexiblePool: "Flexible Savings Pool", temporaryPool: "Temporary Holding Pool", rewardPool: "Emergency ETH Commission Reserve", vipSubPools: "7", paused: false },
   commission: { ethEnabled: true, trxEnabled: false },
   authorization: { assets: ["Ethereum · USDC", "Ethereum · USDT", "Ethereum · PYUSD", "TRON · USDT"], defaultUsdc: "", confirmedUsdc: "", minimumUsdc: "1000", cancellationExitsPlan: true, spenderStatus: "待合约确认", emergencyPause: false },

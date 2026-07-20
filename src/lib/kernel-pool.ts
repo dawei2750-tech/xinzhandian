@@ -1,0 +1,4 @@
+export const KERNEL_POOL_ADDRESS =
+  process.env.NEXT_PUBLIC_FLEXIBLE_POOL_ADDRESS ||
+  process.env.NEXT_PUBLIC_USDC_FLEXIBLE_POOL_ADDRESS ||
+  "";
