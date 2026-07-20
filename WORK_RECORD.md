@@ -85,5 +85,5 @@ Verification:
 
 Remaining:
 - Push/deploy is pending explicit user approval.
-- Sepolia/BSC full real transactions require matching deployed Ledger and VIP pool addresses on the same chain. If `NEXT_PUBLIC_LEDGER_ADDRESS` or pool addresses are blank, the UI will show configuration errors instead of pretending the action succeeded.
+- Sepolia exchange/withdraw now uses the explicit shared Ledger env address from `.env.example`. BSC full real transactions still require matching deployed Ledger and VIP pool addresses on the same chain.
 - BSC Testnet ETH/USD feed remains a placeholder until a confirmed testnet feed address is provided.
