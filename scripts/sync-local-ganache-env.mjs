@@ -21,6 +21,49 @@ function readDeployment() {
   return JSON.parse(readFileSync(deploymentPath, "utf8"));
 }
 
+function assertUniqueAddress(value, name, seen) {
+  const address = assertAddress(value, name);
+  const normalized = address.toLowerCase();
+  if (seen.has(normalized)) {
+    throw new Error(`${name} duplicates ${seen.get(normalized)}`);
+  }
+  seen.set(normalized, name);
+  return address;
+}
+
+function validateDeploymentShape(deployment) {
+  const symbols = ["USDT", "USDC", "PYUSD"];
+  const expectedRates = {
+    VIP1: 17000,
+    VIP2: 22000,
+    VIP3: 26000,
+    VIP4: 30000,
+    VIP5: 34000,
+    VIP6: 38000,
+    VIP7: 45000,
+  };
+  const tokenAddresses = new Map();
+  const poolAddresses = new Map();
+
+  for (const symbol of symbols) {
+    assertUniqueAddress(deployment.tokens?.[symbol]?.address, `tokens.${symbol}.address`, tokenAddresses);
+    assertUniqueAddress(deployment.pools?.[symbol]?.flexible, `pools.${symbol}.flexible`, poolAddresses);
+    for (let vip = 1; vip <= 7; vip += 1) {
+      const key = `VIP${vip}`;
+      assertUniqueAddress(deployment.pools?.[symbol]?.fixed?.[key], `pools.${symbol}.fixed.${key}`, poolAddresses);
+    }
+  }
+
+  const fixedPools = Array.isArray(deployment.fixedPools) ? deployment.fixedPools : [];
+  for (const [name, dailyRatePpm] of Object.entries(expectedRates)) {
+    const pool = fixedPools.find((item) => item?.name === name);
+    if (!pool) throw new Error(`fixedPools.${name} is missing`);
+    if (pool.dailyRatePpm !== dailyRatePpm) {
+      throw new Error(`fixedPools.${name}.dailyRatePpm expected ${dailyRatePpm}, got ${pool.dailyRatePpm}`);
+    }
+  }
+}
+
 function buildEnv(deployment) {
   const symbols = ["USDT", "USDC", "PYUSD"];
   const lines = [
@@ -72,6 +115,7 @@ function checkFile(path, expected) {
 }
 
 const expected = buildEnv(readDeployment());
+validateDeploymentShape(readDeployment());
 const targets = [resolve(projectRoot, ".env.local"), resolve(projectRoot, ".env.example")];
 
 if (checkOnly) {
