@@ -6,4 +6,6 @@
 *.log
 .env*
 !.env.example
+!.env.bsc-testnet.example
+!.env.local.example
 .vercel

@@ -116,7 +116,9 @@ function checkFile(path, expected) {
 
 const expected = buildEnv(readDeployment());
 validateDeploymentShape(readDeployment());
-const targets = [resolve(projectRoot, ".env.local"), resolve(projectRoot, ".env.example")];
+const localTemplate = resolve(projectRoot, ".env.local.example");
+const localRuntime = resolve(projectRoot, ".env.local");
+const targets = checkOnly ? [localTemplate] : [localRuntime, localTemplate];
 
 if (checkOnly) {
   const failures = targets.flatMap((target) => checkFile(target, expected));

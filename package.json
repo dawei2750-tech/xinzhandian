@@ -11,6 +11,9 @@
     "test": "vitest",
     "env:sync:local": "node scripts/sync-local-ganache-env.mjs",
     "env:check:local": "node scripts/sync-local-ganache-env.mjs --check",
+    "env:use:sepolia": "node scripts/use-env-template.mjs sepolia",
+    "env:use:bsc-testnet": "node scripts/use-env-template.mjs bsc-testnet",
+    "env:use:local": "node scripts/use-env-template.mjs local",
     "env:push:vercel": "node scripts/push-vercel-env.mjs",
     "visual:check": "node scripts/visual-check.mjs"
   },

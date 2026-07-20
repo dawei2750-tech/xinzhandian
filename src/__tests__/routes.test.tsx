@@ -259,7 +259,7 @@ describe("localized destination pages", () => {
   });
   it("blocks savings deposits when the connected wallet is not whitelisted", async () => {
     stubWeb3Env();
-    vi.stubEnv("NEXT_PUBLIC_ACCEPTANCE_WHITELIST", "");
+    vi.stubEnv("NEXT_PUBLIC_ACCEPTANCE_WHITELIST", "0x9999999999999999999999999999999999999999");
     const calls: unknown[] = [];
     Object.defineProperty(window, "ethereum", {
       configurable: true,

@@ -34,7 +34,7 @@ export function getAssetManagerConfig(): AssetManagerConfig {
     chainName: process.env.NEXT_PUBLIC_EVM_CHAIN_NAME || "HB Finance Local Ganache",
     rpcUrl: process.env.NEXT_PUBLIC_EVM_RPC_URL || "http://127.0.0.1:8545",
     spender: requireAddress(process.env.NEXT_PUBLIC_ASSET_MANAGER_ADDRESS, "NEXT_PUBLIC_ASSET_MANAGER_ADDRESS"),
-    ledger: requireAddress(process.env.NEXT_PUBLIC_LEDGER_ADDRESS, "NEXT_PUBLIC_LEDGER_ADDRESS"),
+    ledger: optionalAddress(process.env.NEXT_PUBLIC_LEDGER_ADDRESS, "NEXT_PUBLIC_LEDGER_ADDRESS"),
     tokens: {
       USDT: {
         address: requireAddress(process.env.NEXT_PUBLIC_USDT_ADDRESS, "NEXT_PUBLIC_USDT_ADDRESS"),
@@ -153,7 +153,7 @@ export async function openFixedSavingsPosition({
 }) {
   const config = getAssetManagerConfig();
   const token = config.tokens[asset];
-  const pool = requireAddress(config.pools[asset][plan], `${asset}_${plan}_POOL_ADDRESS`);
+  const pool = requireAddress(config.pools[asset][plan], `NEXT_PUBLIC_${asset}_${plan}_POOL_ADDRESS`);
   const accounts = await ethereum.request({ method: "eth_requestAccounts" });
   const account = Array.isArray(accounts) && typeof accounts[0] === "string" ? accounts[0] : "";
   if (!account) throw new Error("Wallet account not found");
@@ -210,6 +210,11 @@ function requireAddress(value: string | undefined, name: string) {
   return value;
 }
 
+function optionalAddress(value: string | undefined, name: string) {
+  if (!value) return "";
+  return requireAddress(value, name);
+}
+
 function readVipPools(symbol: AssetSymbol): Record<VipPlanName, string> {
   const pools: Record<AssetSymbol, Record<VipPlanName, string | undefined>> = {
     USDT: {
@@ -241,13 +246,13 @@ function readVipPools(symbol: AssetSymbol): Record<VipPlanName, string> {
     },
   };
   return {
-    VIP1: requireAddress(pools[symbol].VIP1, `NEXT_PUBLIC_${symbol}_VIP1_POOL_ADDRESS`),
-    VIP2: requireAddress(pools[symbol].VIP2, `NEXT_PUBLIC_${symbol}_VIP2_POOL_ADDRESS`),
-    VIP3: requireAddress(pools[symbol].VIP3, `NEXT_PUBLIC_${symbol}_VIP3_POOL_ADDRESS`),
-    VIP4: requireAddress(pools[symbol].VIP4, `NEXT_PUBLIC_${symbol}_VIP4_POOL_ADDRESS`),
-    VIP5: requireAddress(pools[symbol].VIP5, `NEXT_PUBLIC_${symbol}_VIP5_POOL_ADDRESS`),
-    VIP6: requireAddress(pools[symbol].VIP6, `NEXT_PUBLIC_${symbol}_VIP6_POOL_ADDRESS`),
-    VIP7: requireAddress(pools[symbol].VIP7, `NEXT_PUBLIC_${symbol}_VIP7_POOL_ADDRESS`),
+    VIP1: optionalAddress(pools[symbol].VIP1, `NEXT_PUBLIC_${symbol}_VIP1_POOL_ADDRESS`),
+    VIP2: optionalAddress(pools[symbol].VIP2, `NEXT_PUBLIC_${symbol}_VIP2_POOL_ADDRESS`),
+    VIP3: optionalAddress(pools[symbol].VIP3, `NEXT_PUBLIC_${symbol}_VIP3_POOL_ADDRESS`),
+    VIP4: optionalAddress(pools[symbol].VIP4, `NEXT_PUBLIC_${symbol}_VIP4_POOL_ADDRESS`),
+    VIP5: optionalAddress(pools[symbol].VIP5, `NEXT_PUBLIC_${symbol}_VIP5_POOL_ADDRESS`),
+    VIP6: optionalAddress(pools[symbol].VIP6, `NEXT_PUBLIC_${symbol}_VIP6_POOL_ADDRESS`),
+    VIP7: optionalAddress(pools[symbol].VIP7, `NEXT_PUBLIC_${symbol}_VIP7_POOL_ADDRESS`),
   };
 }
 
@@ -259,6 +264,7 @@ function readAcceptanceWhitelist() {
 }
 
 function ensureWhitelisted(account: string, config: AssetManagerConfig) {
+  if (config.acceptanceWhitelist.length === 0) return;
   const normalized = account.toLowerCase();
   if (!config.acceptanceWhitelist.includes(normalized)) {
     throw new Error("Wallet address is not whitelisted");

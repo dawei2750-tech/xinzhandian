@@ -33,3 +33,32 @@ Verification:
 
 Remaining:
 - Real deposit execution still requires Chrome with MetaMask unlocked on local chain `31337`, the testing account imported, and the wallet holding the three local minted test tokens.
+
+## 2026-07-21 03:44 +08:00
+
+Scope: standalone frontend debug repository and independent debug Vercel project only. Original production repository and original Vercel project were not modified.
+
+Completed:
+- Changed the project-party debug default from local Ganache `31337` to Ethereum Sepolia.
+- Set Sepolia RPC to `https://sepolia.drpc.org`.
+- Added a BSC Testnet template using `https://bsc-testnet.drpc.org` and chain ID `97`.
+- Kept local Ganache as a separate development template generated from `D:\hb_finance_ganache\deployments\local-latest.json`.
+- Updated wallet config so token addresses and AssetManager are required for balance/approval recognition, while Ledger/VIP fixed-pool addresses may be absent on public testnets until those pool contracts are deployed on the same chain.
+- Updated deposit behavior so missing VIP pool addresses are blocked before any wallet request.
+- Changed debug whitelist behavior: an empty `NEXT_PUBLIC_ACCEPTANCE_WHITELIST` allows project-party testing; if the variable is configured, non-listed wallets are still blocked.
+
+Current Sepolia debug addresses:
+- USDT: `0xd78e26e0017fb6D830395f5247c04CC71DEc3a47`
+- USDC: `0x4229D50d940E546DEaa8fc1fEe5b72cCCE3E9DbF`
+- PYUSD: `0x434aA6660FA949A9d57128beCe17DD33E4899b27`
+- AssetManager: `0x57C3a549e3aFa9c12fE9031F1ADE08A8D8729A28`
+
+Verification:
+- `npm.cmd run env:check:local` passed for the local Ganache template.
+- `npm.cmd test -- --run` passed 61/61.
+- `npm.cmd run lint` passed.
+- `npm.cmd run build` passed with `.env.local` set to Sepolia.
+
+Remaining:
+- BSC Testnet still needs BSC-chain deployments of USDT, USDC, PYUSD, AssetManager, Ledger, Factory, and the independent VIP pools before it can identify balances and accept deposits on BSC.
+- Sepolia can identify the three configured Sepolia test tokens. Fixed-pool deposits still need Sepolia VIP pool addresses before deposit submission can work.

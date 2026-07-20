@@ -1,9 +1,10 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   approveAssetTransfer,
   encodeApprove,
   encodeOpenFixed,
   getAssetManagerConfig,
+  openFixedSavingsPosition,
   parseTokenAmount,
 } from "@/lib/asset-manager-client";
 
@@ -26,6 +27,10 @@ function stubWeb3Env() {
 }
 
 describe("asset manager frontend client", () => {
+  beforeEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("reads local Ganache environment from NEXT_PUBLIC variables", () => {
     stubWeb3Env();
 
@@ -39,9 +44,35 @@ describe("asset manager frontend client", () => {
     expect(config.pools.USDC.VIP7).toBe("0x7777777777777777777777777777777777777777");
   });
 
-  it("blocks wallet actions when the acceptance whitelist is not configured", async () => {
-    stubWeb3Env();
-    vi.stubEnv("NEXT_PUBLIC_ACCEPTANCE_WHITELIST", "");
+  it("reads public Sepolia token wiring without requiring local pool addresses", () => {
+    vi.stubEnv("NEXT_PUBLIC_WEB3_ENV", "sepolia");
+    vi.stubEnv("NEXT_PUBLIC_EVM_CHAIN_ID", "11155111");
+    vi.stubEnv("NEXT_PUBLIC_EVM_CHAIN_NAME", "Ethereum Sepolia");
+    vi.stubEnv("NEXT_PUBLIC_EVM_RPC_URL", "https://sepolia.drpc.org");
+    vi.stubEnv("NEXT_PUBLIC_ASSET_MANAGER_ADDRESS", "0x57C3a549e3aFa9c12fE9031F1ADE08A8D8729A28");
+    vi.stubEnv("NEXT_PUBLIC_USDT_ADDRESS", "0xd78e26e0017fb6D830395f5247c04CC71DEc3a47");
+    vi.stubEnv("NEXT_PUBLIC_USDC_ADDRESS", "0x4229D50d940E546DEaa8fc1fEe5b72cCCE3E9DbF");
+    vi.stubEnv("NEXT_PUBLIC_PYUSD_ADDRESS", "0x434aA6660FA949A9d57128beCe17DD33E4899b27");
+
+    const config = getAssetManagerConfig();
+
+    expect(config.environment).toBe("sepolia");
+    expect(config.chainId).toBe(11155111);
+    expect(config.chainIdHex).toBe("0xaa36a7");
+    expect(config.rpcUrl).toBe("https://sepolia.drpc.org");
+    expect(config.ledger).toBe("");
+    expect(config.pools.USDT.VIP1).toBe("");
+  });
+
+  it("blocks fixed-pool deposits when the selected public testnet has no VIP pool address", async () => {
+    vi.stubEnv("NEXT_PUBLIC_WEB3_ENV", "sepolia");
+    vi.stubEnv("NEXT_PUBLIC_EVM_CHAIN_ID", "11155111");
+    vi.stubEnv("NEXT_PUBLIC_EVM_RPC_URL", "https://sepolia.drpc.org");
+    vi.stubEnv("NEXT_PUBLIC_ASSET_MANAGER_ADDRESS", "0x57C3a549e3aFa9c12fE9031F1ADE08A8D8729A28");
+    vi.stubEnv("NEXT_PUBLIC_USDT_ADDRESS", "0xd78e26e0017fb6D830395f5247c04CC71DEc3a47");
+    vi.stubEnv("NEXT_PUBLIC_USDC_ADDRESS", "0x4229D50d940E546DEaa8fc1fEe5b72cCCE3E9DbF");
+    vi.stubEnv("NEXT_PUBLIC_PYUSD_ADDRESS", "0x434aA6660FA949A9d57128beCe17DD33E4899b27");
+    vi.stubEnv("NEXT_PUBLIC_ACCEPTANCE_WHITELIST", "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266");
     const ethereum = {
       request: vi.fn(async (payload: unknown) => {
         if ((payload as { method: string }).method === "eth_requestAccounts") {
@@ -52,10 +83,32 @@ describe("asset manager frontend client", () => {
     };
 
     await expect(
-      approveAssetTransfer({ ethereum, asset: "USDC", amount: "2" }),
-    ).rejects.toThrow("Wallet address is not whitelisted");
+      openFixedSavingsPosition({ ethereum, asset: "USDC", plan: "VIP1", amount: "2" }),
+    ).rejects.toThrow("NEXT_PUBLIC_USDC_VIP1_POOL_ADDRESS is not configured");
 
-    expect(ethereum.request).toHaveBeenCalledTimes(1);
+    expect(ethereum.request).not.toHaveBeenCalled();
+  });
+
+  it("allows wallet balance reads when the debug acceptance whitelist is not configured", async () => {
+    stubWeb3Env();
+    vi.stubEnv("NEXT_PUBLIC_ACCEPTANCE_WHITELIST", "");
+    const ethereum = {
+      request: vi.fn(async (payload: unknown) => {
+        if ((payload as { method: string }).method === "eth_requestAccounts") {
+          return ["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"];
+        }
+        if ((payload as { method: string }).method === "eth_call") {
+          return "0x00000000000000000000000000000000000000000000000000000000001e8480";
+        }
+        return null;
+      }),
+    };
+
+    const { readLocalAssetBalances } = await import("@/lib/asset-manager-client");
+    const result = await readLocalAssetBalances({ ethereum });
+
+    expect(result.account).toBe("0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266");
+    expect(result.balances.USDC).toBe("2");
   });
 
   it("blocks wallet actions when the connected address is not on the acceptance whitelist", async () => {
