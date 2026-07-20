@@ -9,6 +9,9 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest",
+    "env:sync:local": "node scripts/sync-local-ganache-env.mjs",
+    "env:check:local": "node scripts/sync-local-ganache-env.mjs --check",
+    "env:push:vercel": "node scripts/push-vercel-env.mjs",
     "visual:check": "node scripts/visual-check.mjs"
   },
   "dependencies": {
