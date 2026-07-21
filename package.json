@@ -15,6 +15,10 @@
     "env:use:bsc-testnet": "node scripts/use-env-template.mjs bsc-testnet",
     "env:use:local": "node scripts/use-env-template.mjs local",
     "env:push:vercel": "node scripts/push-vercel-env.mjs",
+    "deploy:bsc:test-tokens": "node scripts/deploy-bsc-test-tokens.mjs",
+    "faucet:bsc": "node scripts/bsc-faucet-helper.mjs",
+    "faucet:bsc:once": "node scripts/bsc-faucet-helper.mjs --once",
+    "prewarm:debug": "node scripts/prewarm-debug-site.mjs",
     "visual:check": "node scripts/visual-check.mjs"
   },
   "dependencies": {

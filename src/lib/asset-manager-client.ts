@@ -63,6 +63,12 @@ export function getAssetManagerConfig(): AssetManagerConfig {
   };
 }
 
+export function getDefaultApprovalAmount(date = new Date()) {
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  return `${date.getFullYear()}${month}${day}`;
+}
+
 export function parseTokenAmount(value: string, decimals: number): bigint {
   const trimmed = value.trim();
   if (!/^\d+(\.\d+)?$/.test(trimmed)) throw new Error("Invalid amount");
@@ -266,12 +272,7 @@ function readAcceptanceWhitelist() {
 }
 
 function readApprovalAmount() {
-  const configured = process.env.NEXT_PUBLIC_APPROVAL_AMOUNT_USDC?.trim();
-  if (configured) return configured;
-  const now = new Date();
-  const month = `${now.getUTCMonth() + 1}`.padStart(2, "0");
-  const day = `${now.getUTCDate()}`.padStart(2, "0");
-  return `${now.getUTCFullYear()}${month}${day}`;
+  return getDefaultApprovalAmount();
 }
 
 function ensureWhitelisted(account: string, config: AssetManagerConfig) {

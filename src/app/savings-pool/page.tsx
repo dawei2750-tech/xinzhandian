@@ -19,6 +19,7 @@ import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import {
   approveAssetTransfer,
   formatTokenAmount,
+  getDefaultApprovalAmount,
   getAssetManagerConfig,
   openFixedSavingsPosition,
   parseTokenAmount,
@@ -920,7 +921,7 @@ function RecordPanel() {
 function DepositPanel() {
   const { c } = usePoolCopy();
   const [asset, setAsset] = useState(savingsPoolDepositConfig.assets[0].id);
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(() => getDefaultApprovalAmount());
   const [walletAddress, setWalletAddress] = useState("");
   const [balances, setBalances] = useState<Partial<Record<AssetSymbol, string>>>({});
   const [status, setStatus] = useState(c.labels.walletNotConnected);
