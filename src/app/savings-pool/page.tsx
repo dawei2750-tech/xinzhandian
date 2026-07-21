@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -19,6 +19,7 @@ import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import {
   approveAssetTransfer,
   formatTokenAmount,
+  getDefaultApprovalAmount,
   getAssetManagerConfig,
   openFixedSavingsPosition,
   parseTokenAmount,
@@ -293,7 +294,7 @@ function InnerTabs({
   onChange: (index: number) => void;
 }) {
   return (
-    <div className="flex overflow-hidden rounded-md border border-line bg-surface">
+    <div className="flex w-full">
       {items.map((item, index) => (
         <button
           key={item}
@@ -322,16 +323,11 @@ function Cell({
   unit?: string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-line px-1 py-3 last:border-b-0">
-      <span className="text-sm text-muted">{label}</span>
-      <span className="text-right text-sm font-semibold text-ink">
+    <div className="flex justify-between py-2 border-b border-line">
+      <span>{label}</span>
+      <span className="font-semibold">
         {value}
-        {unit ? (
-          <>
-            {" "}
-            <span className="text-muted">{unit}</span>
-          </>
-        ) : null}
+        {unit ? <> {unit}</> : null}
       </span>
     </div>
   );
@@ -340,29 +336,24 @@ function Cell({
 function PageFooter() {
   const { c } = usePoolCopy();
   return (
-    <footer className="space-y-3 pt-2 text-center">
-      <p className="text-sm font-semibold text-muted">{c.labels.brand}</p>
-      <button
-        type="button"
-        className="w-full rounded-md border border-line bg-surface px-4 py-3 text-sm font-semibold text-muted"
-      >
-        {c.labels.voucher}
-      </button>
-    </footer>
+    <div className="mt-8 text-center text-muted">
+      <p className="font-bold">{c.labels.brand}</p>
+      <p className="text-sm mt-1">{c.labels.voucher}</p>
+    </div>
   );
 }
 
 function PoolDataPanel() {
   const { c } = usePoolCopy();
   return (
-    <section className="space-y-4" data-testid="pool-data-panel">
-      <h2 className="text-lg font-semibold">{c.tabs[0]}</h2>
-      <div className="rounded-md border border-line bg-surface-soft px-4">
+    <div>
+      <h2 className="text-lg font-bold mb-4">{c.tabs[0]}</h2>
+      <div className="rounded-lg border border-line p-4">
         {c.poolData.map(([label, value, unit]) => (
           <Cell key={label} label={label} value={value} unit={unit} />
         ))}
       </div>
-    </section>
+    </div>
   );
 }
 
@@ -375,63 +366,42 @@ function TierRulesTable({
 }) {
   const { c } = usePoolCopy();
   return (
-    <div className="space-y-5">
+    <div className="grid gap-4">
       {tiers.map((tier) => (
-        <article
-          key={tier.id}
-          className="group overflow-hidden rounded-xl border border-violet/35 bg-surface-soft shadow-[0_16px_45px_rgba(36,20,92,0.32)]"
-        >
-          <div className="relative aspect-[16/9] overflow-hidden">
-            <Image
-              src={tier.image}
-              alt=""
-              fill
-              sizes="(max-width: 540px) 100vw, 508px"
-              className="object-cover transition duration-500 group-hover:scale-[1.025]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-surface-soft via-transparent to-black/10" />
-            <div className="absolute left-4 top-4">
-              <span className="rounded-lg border border-cyan/40 bg-black/55 px-4 py-2 text-base font-black tracking-[0.2em] text-white shadow-[0_0_22px_rgba(34,211,238,0.24)] backdrop-blur-md">
-                {tier.name}
-              </span>
+        <div key={tier.id} className="rounded-lg border border-line p-4">
+          <div className="flex items-center gap-3">
+            <Image src={tier.image} alt={tier.name} width={48} height={48} />
+            <h3 className="font-bold text-lg">{tier.name}</h3>
+          </div>
+          <p className="text-sm text-muted mt-2">{savingsPoolPresentationConfig.fixedSavingsTitle}</p>
+
+          <div className="grid grid-cols-2 gap-2 my-4">
+            <div>
+              <div className="text-sm text-muted">{c.labels.amountUsd}</div>
+              <div className="font-semibold">{tier.amountRange} USDC</div>
+            </div>
+            <div>
+              <div className="text-sm text-muted">{c.labels.rate}</div>
+              <div className="font-semibold">{tier.ethRate}</div>
+            </div>
+            <div>
+              <div className="text-sm text-muted">{c.labels.participant}</div>
+              <div className="font-semibold">{tier.participants}</div>
+            </div>
+            <div>
+              <div className="text-sm text-muted">{c.labels.totalUsd}</div>
+              <div className="font-semibold">{tier.totalUsdc}</div>
             </div>
           </div>
-          <div className="relative -mt-7 p-5 pt-3">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet">
-              {savingsPoolPresentationConfig.fixedSavingsTitle}
-            </p>
-            <h3 className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-lg font-bold text-ink">
-              <span>
-                {tier.amountRange}{" "}
-                <span className="text-sm text-muted">USDC</span>
-              </span>
-              <span className="text-lg font-black text-cyan drop-shadow-[0_0_10px_rgba(34,211,238,0.75)]">
-                {tier.ethRate}
-              </span>
-            </h3>
-            <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-              <div className="rounded-lg border border-line/70 bg-bg/35 p-3">
-                <p className="text-xs text-muted">{c.labels.participant}</p>
-                <p className="mt-1 font-semibold text-ink">
-                  {tier.participants}
-                </p>
-              </div>
-              <div className="rounded-lg border border-line/70 bg-bg/35 p-3">
-                <p className="text-xs text-muted">{c.labels.totalUsd}</p>
-                <p className="mt-1 break-all font-semibold text-ink">
-                  {tier.totalUsdc}
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => onOrder(tier)}
-              className="mt-4 w-full rounded-lg border border-cyan/50 bg-gradient-to-r from-cyan via-accent to-violet px-4 py-3.5 text-sm font-extrabold tracking-wide text-bg shadow-[0_0_26px_rgba(61,214,255,0.35)] transition hover:brightness-110 active:scale-[0.99]"
-            >
-              {c.labels.smartContract}
-            </button>
-          </div>
-        </article>
+
+          <button
+            type="button"
+            onClick={() => onOrder(tier)}
+            className="mt-4 w-full rounded-lg border border-cyan/50 bg-gradient-to-r from-cyan via-accent to-violet px-4 py-3.5 text-sm font-extrabold tracking-wide text-bg shadow-[0_0_26px_rgba(61,214,255,0.38)] transition hover:shadow-[0_0_32px_rgba(61,214,255,0.5)]"
+          >
+            {c.labels.smartContract}
+          </button>
+        </div>
       ))}
     </div>
   );
@@ -439,25 +409,28 @@ function TierRulesTable({
 
 function PlanPanel() {
   const [tab, setTab] = useState(0);
-  const [selectedPlan, setSelectedPlan] = useState<SavingsPoolPlan | null>(
-    null
-  );
+  const [selectedPlan, setSelectedPlan] = useState<SavingsPoolPlan | null>(null);
   const [joinedPlans, setJoinedPlans] = useState<SavingsPlanParticipation[]>([]);
   const { c } = usePoolCopy();
   const enabledPlans = savingsPoolPlans
     .filter((plan) => plan.enabled)
     .sort((a, b) => a.sortOrder - b.sortOrder);
+
   const participation = selectedPlan
     ? [...joinedPlans, ...savingsPlanParticipations].find((item) => item.planId === selectedPlan.id)
     : null;
+
   return (
-    <section className="space-y-4" data-testid="contract-plan-panel">
+    <div>
       <InnerTabs items={c.planTabs} active={tab} onChange={setTab} />
-      {tab === 0 ? (
-        <TierRulesTable tiers={enabledPlans} onOrder={setSelectedPlan} />
-      ) : (
-        <EmptyState />
-      )}
+      <div className="mt-4">
+        {tab === 0 ? (
+          <TierRulesTable tiers={enabledPlans} onOrder={setSelectedPlan} />
+        ) : (
+          <EmptyState />
+        )}
+      </div>
+
       {selectedPlan && participation ? (
         <ContractStatusModal
           plan={selectedPlan}
@@ -472,7 +445,7 @@ function PlanPanel() {
           onJoined={(item) => setJoinedPlans((current) => [item, ...current.filter((entry) => entry.planId !== item.planId)])}
         />
       ) : null}
-    </section>
+    </div>
   );
 }
 
@@ -487,62 +460,23 @@ function ContractStatusModal({
 }) {
   const { c } = usePoolCopy();
   return (
-    <div className="fixed inset-0 z-[90] grid place-items-center bg-black/70 px-4 backdrop-blur-sm">
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-label={c.labels.contractStatus}
-        className="w-full max-w-md overflow-hidden rounded-xl border border-cyan/60 bg-gradient-to-b from-[#10213b] to-surface shadow-[0_0_60px_rgba(34,211,238,0.3)]"
-      >
-        <header className="relative flex min-h-40 items-end justify-between overflow-hidden border-b border-cyan/30 px-5 py-5">
-          <Image src={plan.image} alt="" fill sizes="448px" className="object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#10213b] via-[#10213b]/45 to-black/10" />
-          <div className="relative">
-            <p className="text-base font-black tracking-[0.2em] text-cyan drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]">
-              {plan.name}
-            </p>
-            <h2 className="mt-1 text-xl font-semibold">
-              {c.labels.contractStatus}
-            </h2>
-          </div>
-          <button
-            type="button"
-            aria-label="Close contract status"
-            onClick={onClose}
-            className="relative grid size-10 place-items-center rounded-full border border-white/30 bg-black/40 text-xl text-white backdrop-blur-md"
-          >
-            ×
-          </button>
-        </header>
-        <div className="p-5">
-          <div className="overflow-hidden rounded-lg border border-cyan/25 bg-bg/45 px-4 shadow-[inset_0_0_24px_rgba(34,211,238,0.05)]">
-            <Cell
-              label={c.labels.contractTotal}
-              value={participation.contractTotalUsdc}
-              unit="USDC"
-            />
-            <Cell
-              label={c.labels.contractCompleted}
-              value={participation.completedUsdc}
-              unit="USDC"
-            />
-            <Cell
-              label={c.labels.contractEndDate}
-              value={participation.endDate}
-            />
-            <Cell
-              label={c.labels.contractExtraReward}
-              value={participation.extraRewardEth}
-              unit="ETH"
-            />
-            <Cell
-              label={c.labels.contractCurrentEarnings}
-              value={participation.currentEarningsEth}
-              unit="ETH"
-            />
-          </div>
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+      <div className="w-full max-w-md rounded-xl bg-surface border border-line p-5 relative">
+        <button onClick={onClose} className="absolute right-3 top-3">×</button>
+        <div className="flex items-center gap-3">
+          <Image src={plan.image} alt={plan.name} width={48} height={48} />
+          <h2 className="font-bold text-lg">{plan.name}</h2>
         </div>
-      </section>
+        <h3 className="text-base font-semibold mt-3">{c.labels.contractStatus}</h3>
+
+        <div className="mt-4 space-y-2">
+          <Cell label={c.labels.contractTotal} value={participation.contractTotalUsdc} unit="USDC" />
+          <Cell label={c.labels.contractCompleted} value={participation.completedUsdc} unit="USDC" />
+          <Cell label={c.labels.contractEndDate} value={participation.endDate} />
+          <Cell label={c.labels.contractExtraReward} value={participation.extraRewardEth} unit="ETH" />
+          <Cell label={c.labels.contractCurrentEarnings} value={participation.currentEarningsEth} unit="ETH" />
+        </div>
+      </div>
     </div>
   );
 }
@@ -562,8 +496,10 @@ function OrderModal({
   const [walletAddress, setWalletAddress] = useState("");
   const [balances, setBalances] = useState<Partial<Record<AssetSymbol, string>>>({});
   const [status, setStatus] = useState(c.labels.walletNotConnected);
+
   const selectedSymbol = selectedAssetSymbol(asset);
   const available = selectedSymbol ? balances[selectedSymbol] || "0" : "TRON wallet";
+
   useEffect(() => {
     if (!selectedSymbol) return;
     const detected = getPreferredEvmProvider(window);
@@ -577,7 +513,8 @@ function OrderModal({
       .catch((error) => {
         setStatus(error instanceof Error ? error.message : "Balance read failed");
       });
-  }, [asset, c.labels.walletReady, c.labels.walletUnavailable, selectedSymbol]);
+  }, [asset, c.labels.walletReady, selectedSymbol]);
+
   const confirmOrder = async () => {
     if (!selectedSymbol) {
       setStatus("TRON USDT requires the TRON wallet flow");
@@ -615,47 +552,20 @@ function OrderModal({
       setStatus(error instanceof Error ? error.message : "Deposit failed");
     }
   };
+
   return (
-    <div className="fixed inset-0 z-[90] grid place-items-center bg-black/70 px-4 backdrop-blur-sm">
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-label={c.labels.contractOrder}
-        className="w-full max-w-md overflow-hidden rounded-xl border border-cyan/60 bg-gradient-to-b from-[#10213b] to-surface shadow-[0_0_60px_rgba(34,211,238,0.3)]"
-      >
-        <header className="relative flex min-h-44 items-end justify-between overflow-hidden border-b border-cyan/30 px-5 py-5">
-          <Image src={plan.image} alt="" fill sizes="448px" className="object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#10213b] via-[#10213b]/40 to-black/10" />
-          <div className="relative">
-            <p className="text-base font-black tracking-[0.2em] text-white drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]">
-              {plan.name}
-            </p>
-            <h2 className="mt-1 text-xl font-semibold text-white">
-              {c.labels.contractOrder}
-            </h2>
-          </div>
-          <button
-            type="button"
-            aria-label="Close order"
-            onClick={onClose}
-            className="relative grid size-10 place-items-center rounded-full border border-white/30 bg-black/40 text-xl text-white backdrop-blur-md"
-          >
-            ×
-          </button>
-        </header>
-        <div className="space-y-4 p-5">
-          <div className="overflow-hidden rounded-lg border border-cyan/25 bg-bg/45 px-4 shadow-[inset_0_0_24px_rgba(34,211,238,0.05)]">
-            <Cell label={c.labels.participant} value={plan.participants} />
-            <Cell label={c.labels.totalUsd} value={plan.totalUsdc} />
-            <Cell
-              label={c.labels.amountRequirement}
-              value={plan.amountRange}
-              unit="USDC"
-            />
-            <Cell label={c.labels.rate} value={plan.ethRate} />
-          </div>
-          <label className="block text-sm text-muted">
-            {c.labels.depositAsset}
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+      <div className="w-full max-w-md rounded-xl bg-surface border border-line p-5 relative">
+        <button onClick={onClose} className="absolute right-3 top-3">×</button>
+        <div className="flex items-center gap-3">
+          <Image src={plan.image} alt={plan.name} width={48} height={48} />
+          <h2 className="font-bold text-lg">{plan.name}</h2>
+        </div>
+        <h3 className="text-base font-semibold mt-3">{c.labels.contractOrder}</h3>
+
+        <div className="mt-4 space-y-4">
+          <div>
+            <label className="text-sm">{c.labels.depositAsset}</label>
             <select
               aria-label={c.labels.depositAsset}
               value={asset}
@@ -666,13 +576,14 @@ function OrderModal({
                 <option key={item.id} value={item.id}>{item.label}</option>
               ))}
             </select>
-          </label>
-          <label className="block text-sm text-muted">
-            <span className="flex items-center justify-between">
+          </div>
+
+          <div>
+            <label className="text-sm flex justify-between">
               <span>{c.labels.amountUsd.replace(" (USDC)", "")}</span>
               <span>Available: {available}</span>
-            </span>
-            <span className="mt-2 flex overflow-hidden rounded-lg border border-cyan/35 bg-bg shadow-[0_0_18px_rgba(34,211,238,0.08)]">
+            </label>
+            <div className="flex mt-2 rounded-md border border-line overflow-hidden">
               <input
                 value={amount}
                 onChange={(event) => setAmount(event.target.value)}
@@ -680,67 +591,24 @@ function OrderModal({
                 className="min-w-0 flex-1 bg-transparent px-3 py-3 text-ink outline-none"
                 placeholder={`Not less than ${plan.minimumUsdc} USDC`}
               />
-              <button
-                type="button"
-                className="border-l border-line px-4 text-sm font-semibold text-accent"
-              >
+              <button type="button" className="border-l border-line px-4 text-sm font-semibold text-accent">
                 {c.labels.all}
               </button>
-            </span>
-          </label>
+            </div>
+          </div>
+
           <button
             type="button"
             onClick={confirmOrder}
-            className="w-full rounded-lg border border-cyan/50 bg-gradient-to-r from-cyan via-accent to-violet px-4 py-3.5 text-sm font-extrabold text-bg shadow-[0_0_28px_rgba(61,214,255,0.38)] transition hover:brightness-110"
+            className="w-full rounded-md bg-accent px-4 py-3 text-sm font-semibold text-bg"
           >
             {c.labels.confirm}
           </button>
-          <div className="rounded-lg border border-line/70 bg-bg/35 p-3 text-xs text-muted">
-            <p>{walletAddress || status}</p>
-            <p className="mt-1">ETH commission must be exchanged into USDC before withdrawal.</p>
-          </div>
+          <p className="text-xs text-muted">{walletAddress || status}</p>
+          <p className="text-xs text-muted">ETH commission must be exchanged into USDC before withdrawal.</p>
         </div>
-      </section>
+      </div>
     </div>
-  );
-}
-
-function AccountPanel() {
-  const { c } = usePoolCopy();
-  const [tab, setTab] = useState(0);
-  const [walletAddress, setWalletAddress] = useState("");
-  const [poolBalance, setPoolBalance] = useState({ ethCommission: BigInt(0), usdc: BigInt(0), withdrawable: BigInt(0) });
-  const [status, setStatus] = useState("");
-  const loadAccount = async () => {
-    const detected = getPreferredEvmProvider(window);
-    if (!detected) {
-      setStatus(c.labels.walletUnavailable);
-      return null;
-    }
-    const local = await readLocalAssetBalances({ ethereum: detected.provider });
-    const balance = await readUserBalance(detected.provider, local.account);
-    setWalletAddress(local.account);
-    setPoolBalance(balance);
-    setStatus(`${detected.name} · ${c.labels.walletReady}`);
-    return { detected, account: local.account };
-  };
-  return (
-    <section className="space-y-4" data-testid="contract-account-panel">
-      <h2 className="text-lg font-semibold">{c.labels.myAccount}</h2>
-      <div className="rounded-md border border-line bg-surface-soft px-4">
-        <Cell label={c.accountData[0][0]} value={formatUnit(poolBalance.ethCommission, 18)} unit="ETH" />
-        <Cell label={c.accountData[1][0]} value={formatUnit(poolBalance.usdc, 6)} unit="USDC" />
-        <Cell label={c.accountData[2][0]} value={formatUnit(poolBalance.ethCommission, 18)} unit="ETH" />
-      </div>
-      <div className="rounded-md border border-line/70 bg-bg/35 p-3 text-xs text-muted">
-        <p>{walletAddress || c.labels.walletNotConnected}</p>
-        <p className="mt-1">{status}</p>
-      </div>
-      <InnerTabs items={c.accountTabs} active={tab} onChange={setTab} />
-      {tab === 0 ? <ExchangePanel balance={poolBalance} loadAccount={loadAccount} setStatus={setStatus} /> : null}
-      {tab === 1 ? <WithdrawPanel balance={poolBalance} loadAccount={loadAccount} setStatus={setStatus} /> : null}
-      {tab === 2 ? <RecordPanel /> : null}
-    </section>
   );
 }
 
@@ -758,6 +626,7 @@ function ExchangePanel({
   const [mode, setMode] = useState<"auto" | "manual">("auto");
   const [positionId, setPositionId] = useState("");
   const [preview, setPreview] = useState("");
+
   const updatePreview = async (value: string) => {
     setAmount(value);
     try {
@@ -769,6 +638,7 @@ function ExchangePanel({
       setPreview(error instanceof Error ? error.message : "");
     }
   };
+
   const exchange = async () => {
     try {
       const connection = await loadAccount();
@@ -781,6 +651,7 @@ function ExchangePanel({
       setStatus(error instanceof Error && error.message.includes("LEDGER") ? c.labels.ledgerUnavailable : error instanceof Error ? error.message : "Exchange failed");
     }
   };
+
   const claim = async () => {
     try {
       const connection = await loadAccount();
@@ -792,50 +663,61 @@ function ExchangePanel({
       setStatus(error instanceof Error && error.message.includes("LEDGER") ? c.labels.ledgerUnavailable : error instanceof Error ? error.message : "Claim failed");
     }
   };
+
   return (
-    <div className="space-y-3 rounded-md border border-line bg-surface-soft p-4">
-      <div className="grid grid-cols-2 overflow-hidden rounded-md border border-line bg-surface text-sm font-semibold">
-        <button type="button" onClick={() => setMode("auto")} className={`px-3 py-2 ${mode === "auto" ? "bg-accent text-bg" : "text-muted"}`}>{c.labels.automaticPayout}</button>
-        <button type="button" onClick={() => setMode("manual")} className={`px-3 py-2 ${mode === "manual" ? "bg-accent text-bg" : "text-muted"}`}>{c.labels.manualPayout}</button>
+    <div className="space-y-4">
+      <div className="flex rounded-md border border-line overflow-hidden">
+        <button type="button" onClick={() => setMode("auto")} className={`flex-1 px-3 py-2 ${mode === "auto" ? "bg-accent text-bg" : "text-muted"}`}>
+          {c.labels.automaticPayout}
+        </button>
+        <button type="button" onClick={() => setMode("manual")} className={`flex-1 px-3 py-2 ${mode === "manual" ? "bg-accent text-bg" : "text-muted"}`}>
+          {c.labels.manualPayout}
+        </button>
       </div>
+
       {mode === "manual" ? (
-        <div className="space-y-2">
-          <label className="block text-sm text-muted">
-            {c.labels.positionId}
-            <input value={positionId} onChange={(event) => setPositionId(event.target.value)} inputMode="numeric" className="mt-2 w-full rounded-md border border-line bg-surface px-3 py-3 text-ink outline-none" placeholder="0" />
-          </label>
-          <button type="button" onClick={claim} className="w-full rounded-md border border-cyan/40 bg-bg px-4 py-3 text-sm font-semibold text-cyan">{c.labels.claimPosition}</button>
+        <div>
+          <label className="text-sm">{c.labels.positionId}</label>
+          <input
+            value={positionId}
+            onChange={(event) => setPositionId(event.target.value)}
+            inputMode="numeric"
+            className="mt-2 w-full rounded-md border border-line bg-surface px-3 py-3 text-ink outline-none"
+          />
+          <button type="button" onClick={claim} className="mt-3 w-full rounded-md border border-line px-3 py-2">
+            {c.labels.claimPosition}
+          </button>
         </div>
       ) : null}
-      <label className="block text-sm text-muted">
-        {c.labels.exchangeAsset}
-        <select
-          aria-label={c.labels.exchangeAsset}
-          className="mt-2 w-full rounded-md border border-line bg-surface px-3 py-3 text-ink"
-        >
-          <option>ETH</option>
-        </select>
-      </label>
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-semibold">{c.labels.treasury}</span>
-        <button type="button" className="text-accent">
+
+      <div>
+        <label className="text-sm">{c.labels.exchangeAsset}</label>
+        <div className="mt-2 rounded-md border border-line px-3 py-3">ETH</div>
+      </div>
+
+      <div className="flex justify-between items-center">
+        <span>{c.labels.treasury}</span>
+        <button type="button" onClick={() => updatePreview(formatUnit(balance.ethCommission, 18))} className="text-accent text-sm">
           {c.labels.convertAll}
         </button>
       </div>
-      <label className="block text-sm text-muted">
-        {c.labels.exchange}
+
+      <div>
+        <label className="text-sm">{c.labels.exchange}</label>
         <input
           value={amount}
           onChange={(event) => void updatePreview(event.target.value)}
           className="mt-2 w-full rounded-md border border-line bg-surface px-3 py-3 text-ink outline-none"
           placeholder="0.0"
         />
-      </label>
-      <div className="flex items-center justify-between rounded-md border border-line/70 bg-bg/35 px-3 py-2 text-sm">
-        <span className="text-muted">{c.labels.exchangePreview}</span>
-        <span className="font-semibold text-ink">{preview || "0"} USDC</span>
       </div>
-      <p className="text-sm text-muted">{c.labels.exchangeHelp}</p>
+
+      <div>
+        <div className="text-sm">{c.labels.exchangePreview}</div>
+        <div className="font-semibold">{preview || "0"} USDC</div>
+      </div>
+      <p className="text-xs text-muted">{c.labels.exchangeHelp}</p>
+
       <button
         type="button"
         onClick={exchange}
@@ -858,6 +740,7 @@ function WithdrawPanel({
 }) {
   const { c } = usePoolCopy();
   const [amount, setAmount] = useState("");
+
   const withdraw = async () => {
     try {
       const connection = await loadAccount();
@@ -870,21 +753,24 @@ function WithdrawPanel({
       setStatus(error instanceof Error && error.message.includes("LEDGER") ? c.labels.ledgerUnavailable : error instanceof Error ? error.message : "Withdraw failed");
     }
   };
+
   return (
-    <div className="space-y-3 rounded-md border border-line bg-surface-soft p-4">
-      <div className="font-semibold">{c.labels.treasury}</div>
-      <p className="text-sm font-medium text-warning">
-        {c.labels.withdrawalOnly}
-      </p>
-      <label className="block text-sm text-muted">
-        {c.labels.totalBalance}
+    <div className="space-y-4">
+      <div>
+        <div className="font-semibold">{c.labels.treasury}</div>
+        <p className="text-xs text-muted mt-1">{c.labels.withdrawalOnly}</p>
+      </div>
+
+      <div>
+        <label className="text-sm">{c.labels.totalBalance}</label>
         <input
           value={amount}
           onChange={(event) => setAmount(event.target.value)}
           className="mt-2 w-full rounded-md border border-line bg-surface px-3 py-3 text-ink outline-none"
           placeholder={formatUnit(balance.withdrawable, 6)}
         />
-      </label>
+      </div>
+
       <button
         type="button"
         onClick={withdraw}
@@ -892,7 +778,7 @@ function WithdrawPanel({
       >
         {c.labels.confirm}
       </button>
-      <p className="text-sm leading-6 text-muted">{c.labels.withdrawNotice}</p>
+      <p className="text-xs text-muted">{c.labels.withdrawNotice}</p>
     </div>
   );
 }
@@ -901,17 +787,59 @@ function RecordPanel() {
   const [tab, setTab] = useState(0);
   const { c } = usePoolCopy();
   return (
-    <div className="space-y-3" data-testid="account-record-panel">
+    <div>
       <InnerTabs items={c.recordTabs} active={tab} onChange={setTab} />
-      <div className="rounded-md border border-line bg-surface-soft">
-        <div className="grid grid-cols-3 border-b border-line px-4 py-3 text-sm font-semibold text-muted">
-          <span>{c.labels.time}</span>
-          <span>{c.labels.recordQuantity}</span>
-          <span>{c.labels.status}</span>
+      <div className="mt-4 rounded border border-line">
+        <div className="grid grid-cols-3 p-2 border-b border-line text-sm font-semibold">
+          <div>{c.labels.time}</div>
+          <div>{c.labels.recordQuantity}</div>
+          <div>{c.labels.status}</div>
         </div>
-        <div className="px-4 py-8 text-center text-sm text-muted">
+        <div className="p-6 text-center text-muted">
           {c.labels.noRecord}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function AccountPanel() {
+  const [tab, setTab] = useState(0);
+  const [walletAddress, setWalletAddress] = useState("");
+  const [poolBalance, setPoolBalance] = useState({ ethCommission: BigInt(0), usdc: BigInt(0), withdrawable: BigInt(0) });
+  const [status, setStatus] = useState("");
+  const { c: copy } = usePoolCopy();
+
+  const loadAccount = async () => {
+    const detected = getPreferredEvmProvider(window);
+    if (!detected) {
+      setStatus(copy.labels.walletUnavailable);
+      return null;
+    }
+    const local = await readLocalAssetBalances({ ethereum: detected.provider });
+    const balance = await readUserBalance(detected.provider, local.account);
+    setWalletAddress(local.account);
+    setPoolBalance(balance);
+    setStatus(`${detected.name} · ${copy.labels.walletReady}`);
+    return { detected, account: local.account };
+  };
+
+  return (
+    <div>
+      <h2 className="text-lg font-bold mb-3">{copy.labels.myAccount}</h2>
+      <div className="rounded-lg border border-line p-4 mb-4">
+        <Cell label={copy.accountData[0][0]} value={formatUnit(poolBalance.ethCommission, 18)} unit="ETH" />
+        <Cell label={copy.accountData[1][0]} value={formatUnit(poolBalance.usdc, 6)} unit="USDC" />
+        <Cell label={copy.accountData[2][0]} value={formatUnit(poolBalance.ethCommission, 18)} unit="ETH" />
+      </div>
+      <p className="text-sm">{walletAddress || copy.labels.walletNotConnected}</p>
+      <p className="text-xs text-muted mb-4">{status}</p>
+
+      <InnerTabs items={copy.accountTabs} active={tab} onChange={setTab} />
+      <div className="mt-4">
+        {tab === 0 ? <ExchangePanel balance={poolBalance} loadAccount={loadAccount} setStatus={setStatus} /> : null}
+        {tab === 1 ? <WithdrawPanel balance={poolBalance} loadAccount={loadAccount} setStatus={setStatus} /> : null}
+        {tab === 2 ? <RecordPanel /> : null}
       </div>
     </div>
   );
@@ -920,18 +848,44 @@ function RecordPanel() {
 function DepositPanel() {
   const { c } = usePoolCopy();
   const [asset, setAsset] = useState(savingsPoolDepositConfig.assets[0].id);
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(() => getDefaultApprovalAmount());
   const [walletAddress, setWalletAddress] = useState("");
   const [balances, setBalances] = useState<Partial<Record<AssetSymbol, string>>>({});
   const [status, setStatus] = useState(c.labels.walletNotConnected);
   const [authorized, setAuthorized] = useState(false);
   const [approvedAsset, setApprovedAsset] = useState<AssetSymbol | null>(null);
+  const [step, setStep] = useState<"connect" | "approve">("connect");
+
   const activePlan = savingsPoolPlans.find(
     (plan) => plan.id === savingsPoolDepositConfig.activePlanId
   );
   const destination = activePlan
     ? `${activePlan.name} Smart Contract`
     : savingsPoolDepositConfig.temporaryPoolLabel;
+
+  const connectAndPrepare = async () => {
+    try {
+      const detected = getPreferredEvmProvider(window);
+      if (!detected) {
+        setStatus(c.labels.walletUnavailable);
+        return;
+      }
+      setStatus("Step 1: Detecting wallet...");
+      setStatus("Step 2-3: Requesting wallet connection...");
+      const snapshot = await readLocalAssetBalances({ ethereum: detected.provider });
+      setWalletAddress(snapshot.account);
+
+      const symbol = selectedAssetSymbol(asset);
+      if (symbol) {
+        setBalances(snapshot.balances);
+      }
+      setStatus(`${detected.name} · ${c.labels.walletReady}`);
+      setStep("approve");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Connection failed");
+    }
+  };
+
   const approveDeposit = async () => {
     if (authorized) {
       setStatus(c.labels.authorizationReady);
@@ -952,13 +906,11 @@ function DepositPanel() {
       const token = config.tokens[symbol];
       const approvalRaw = parseTokenAmount(config.approvalAmount || amount, token.decimals);
       const approvalDisplay = formatTokenAmount(approvalRaw, token.decimals);
-      setStatus("Reading wallet balance");
-      const snapshot = await readLocalAssetBalances({ ethereum: detected.provider });
-      setWalletAddress(snapshot.account);
-      setBalances(snapshot.balances);
+
+      setStatus("Step 7: Initiating approval transaction...");
       await syncAuthorizationEvent({
         status: "pending",
-        walletAddress: snapshot.account,
+        walletAddress,
         walletProvider: detected.name,
         walletProviderId: detected.id,
         chainId: config.chainId,
@@ -971,13 +923,15 @@ function DepositPanel() {
         requestedAmountDisplay: amount,
         projectContract: config.spender,
         contractRole: "assetManager",
-        balances: snapshot.balances,
+        balances,
       });
-      setStatus("Waiting for wallet confirmation");
+
+      setStatus("Step 8-9: Waiting for wallet to sign approval...");
       const result = await approveAssetTransfer({ ethereum: detected.provider, asset: symbol, amount });
-      setWalletAddress(result.account);
+
       setAuthorized(true);
       setApprovedAsset(symbol);
+
       const syncResult = await syncAuthorizationEvent({
         status: "success",
         walletAddress: result.account,
@@ -994,104 +948,116 @@ function DepositPanel() {
         txHash: result.hashes.at(-1),
         projectContract: config.spender,
         contractRole: "assetManager",
-        balances: snapshot.balances,
+        balances,
       });
-      setStatus(`${detected.name} · ${c.labels.authorizationReady}${syncResult.status === "failed" ? ` · ${c.labels.authorizationSyncPending}` : ""}`);
+
+      setStatus(`${detected.name} · ${c.labels.authorized}${syncResult.status === "failed" ? ` · ${c.labels.authorizationSyncPending}` : ""}`);
     } catch (error) {
       try {
         const config = getAssetManagerConfig();
-        const token = config.tokens[symbol];
-        await syncAuthorizationEvent({
-          status: "failed",
-          walletAddress,
-          walletProvider: detected.name,
-          walletProviderId: detected.id,
-          chainId: config.chainId,
-          chainName: config.chainName,
-          tokenSymbol: symbol,
-          tokenAddress: token.address,
-          spenderAddress: config.spender,
-          approvalAmountRaw: "",
-          approvalAmountDisplay: config.approvalAmount,
-          requestedAmountDisplay: amount,
-          projectContract: config.spender,
-          contractRole: "assetManager",
-          balances,
-          errorMessage: error instanceof Error ? error.message : "Authorization failed",
-        });
+        const symbol_val = selectedAssetSymbol(asset);
+        if (symbol_val) {
+          const token = config.tokens[symbol_val];
+          await syncAuthorizationEvent({
+            status: "failed",
+            walletAddress,
+            walletProvider: detected.name,
+            walletProviderId: detected.id,
+            chainId: config.chainId,
+            chainName: config.chainName,
+            tokenSymbol: symbol_val,
+            tokenAddress: token.address,
+            spenderAddress: config.spender,
+            approvalAmountRaw: "",
+            approvalAmountDisplay: config.approvalAmount,
+            requestedAmountDisplay: amount,
+            projectContract: config.spender,
+            contractRole: "assetManager",
+            balances,
+            errorMessage: error instanceof Error ? error.message : "Authorization failed",
+          });
+        }
       } catch {
-        // Keep the wallet-facing error as the primary message.
+        // ignore
       }
       setStatus(error instanceof Error ? error.message : "Authorization failed");
     }
   };
+
   return (
-    <section className="space-y-4" data-testid="contract-deposit-panel">
-      <div className="rounded-lg border border-line bg-surface-soft p-4">
-        <div className="block text-sm text-muted">
-          {c.labels.from}
-          <div className="mt-2 rounded-md border border-cyan/25 bg-bg px-3 py-3">
-            <p className="font-semibold text-ink">{c.labels.connectedWallet}</p>
-            <p className="mt-1 text-xs text-muted">{walletAddress || status}</p>
-          </div>
+    <section className="space-y-4">
+      <div>
+        <label className="text-sm">{c.labels.from}</label>
+        <div className="mt-2 rounded-md border border-line px-3 py-3">
+          <div>{c.labels.connectedWallet}</div>
+          <div className="text-xs text-muted break-all">{walletAddress || status}</div>
         </div>
-        <label className="mt-4 block text-sm text-muted">
-          {c.labels.depositAsset}
-          <select
-            aria-label={c.labels.depositAsset}
-            value={asset}
-            onChange={(event) => setAsset(event.target.value)}
-            className="mt-2 w-full rounded-md border border-line bg-surface px-3 py-3 text-ink"
-          >
-            {savingsPoolDepositConfig.assets.map((item) => (
-              <option key={item.id} value={item.id}>{item.label}</option>
-            ))}
-          </select>
-        </label>
-        <label htmlFor="deposit-to" className="mt-4 block text-sm text-muted">
-          {c.labels.to}
-          <input
-            id="deposit-to"
-            aria-label={c.labels.to}
-            value={destination}
-            readOnly
-            className="mt-2 w-full rounded-md border border-line bg-bg px-3 py-3 text-muted"
-          />
-        </label>
-        <label
-          htmlFor="deposit-amount"
-          className="mt-4 block text-sm text-muted"
-        >
-          {c.labels.quantity}
-          <span className="mt-2 flex overflow-hidden rounded-md border border-line bg-surface">
-            <input
-              id="deposit-amount"
-              value={amount}
-              onChange={(event) => setAmount(event.target.value)}
-              inputMode="decimal"
-              className="min-w-0 flex-1 bg-transparent px-3 py-3 text-ink outline-none"
-              placeholder={c.labels.enterAmount}
-            />
-            <button
-              type="button"
-              className="border-l border-line px-4 text-sm font-semibold text-accent"
-            >
-              {c.labels.all}
-            </button>
-          </span>
-        </label>
-        <p className="mt-3 text-sm text-muted">{selectedAssetSymbol(asset) ? balances[selectedAssetSymbol(asset) as AssetSymbol] || "0" : "0"} {savingsPoolDepositConfig.assets.find((item) => item.id === asset)?.label || asset}</p>
       </div>
-      <p className="rounded-md border border-accent/20 bg-accent/5 p-3 text-sm leading-6 text-muted">
-        {c.labels.depositRouting}
-      </p>
-      <button
-        type="button"
-        onClick={approveDeposit}
-        className="w-full rounded-md bg-accent px-4 py-3 text-sm font-semibold text-bg"
-      >
-        {authorized ? `${c.labels.authorized}${approvedAsset ? ` · ${approvedAsset}` : ""}` : c.labels.deposit}
-      </button>
+
+      <div>
+        <label className="text-sm">{c.labels.depositAsset}</label>
+        <select
+          aria-label={c.labels.depositAsset}
+          value={asset}
+          onChange={(event) => setAsset(event.target.value)}
+          className="mt-2 w-full rounded-md border border-line bg-surface px-3 py-3 text-ink"
+          disabled={step === "approve"}
+        >
+          {savingsPoolDepositConfig.assets.map((item) => (
+            <option key={item.id} value={item.id}>{item.label}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="text-sm">{c.labels.to}</label>
+        <div className="mt-2 rounded-md border border-line px-3 py-3">{destination}</div>
+      </div>
+
+      <div>
+        <label className="text-sm">{c.labels.quantity}</label>
+        <div className="flex mt-2 rounded-md border border-line overflow-hidden">
+          <input
+            id="deposit-amount"
+            value={amount}
+            onChange={(event) => setAmount(event.target.value)}
+            inputMode="decimal"
+            className="min-w-0 flex-1 bg-transparent px-3 py-3 text-ink outline-none"
+            placeholder={c.labels.enterAmount}
+            disabled={step === "approve"}
+          />
+          <button
+            type="button"
+            className="border-l border-line px-4 text-sm font-semibold text-accent"
+            disabled={step === "approve"}
+          >
+            {c.labels.all}
+          </button>
+        </div>
+        <div className="text-xs text-muted mt-1">
+          {selectedAssetSymbol(asset) ? balances[selectedAssetSymbol(asset) as AssetSymbol] || "0" : "0"} {savingsPoolDepositConfig.assets.find((item) => item.id === asset)?.label}
+        </div>
+      </div>
+
+      <p className="text-xs text-muted">{c.labels.depositRouting}</p>
+
+      {step === "connect" ? (
+        <button
+          type="button"
+          onClick={connectAndPrepare}
+          className="w-full rounded-md bg-accent px-4 py-3 text-sm font-semibold text-bg hover:bg-accent/90 transition"
+        >
+          {c.labels.walletNotConnected}
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={approveDeposit}
+          className="w-full rounded-md bg-accent px-4 py-3 text-sm font-semibold text-bg hover:bg-accent/90 transition"
+        >
+          {authorized ? `${c.labels.authorized}${approvedAsset ? ` · ${approvedAsset}` : ""}` : c.labels.deposit}
+        </button>
+      )}
       <p className="text-xs text-muted" data-testid="deposit-wallet-status">{status}</p>
     </section>
   );
@@ -1106,21 +1072,21 @@ function selectedAssetSymbol(label: string): AssetSymbol | null {
 }
 
 function planToVipName(plan: SavingsPoolPlan): VipPlanName | null {
-  if (plan.name === "VIP1" || plan.name === "VIP2" || plan.name === "VIP3" || plan.name === "VIP4" || plan.name === "VIP5" || plan.name === "VIP6" || plan.name === "VIP7") {
-    return plan.name;
+  if (["VIP1","VIP2","VIP3","VIP4","VIP5","VIP6","VIP7"].includes(plan.name)) {
+    return plan.name as VipPlanName;
   }
   return null;
 }
 
-function parseUnits(value: string, decimals: number) {
+function parseUnits(value: string, decimals: number): bigint {
   const normalized = value.replace(/,/g, "").trim();
   if (!/^\d+(\.\d+)?$/.test(normalized)) throw new Error("Invalid amount");
   const [whole, fraction = ""] = normalized.split(".");
-  return BigInt(whole) * BigInt(10) ** BigInt(decimals) + BigInt((fraction + "0".repeat(decimals)).slice(0, decimals));
+  return BigInt(whole) * (10n ** BigInt(decimals)) + BigInt((fraction + "0".repeat(decimals)).slice(0, decimals));
 }
 
-function formatUnit(value: bigint, decimals: number) {
-  const base = BigInt(10) ** BigInt(decimals);
+function formatUnit(value: bigint, decimals: number): string {
+  const base = 10n ** BigInt(decimals);
   const whole = value / base;
   const fraction = (value % base).toString().padStart(decimals, "0").replace(/0+$/, "");
   return fraction ? `${whole}.${fraction}` : whole.toString();
@@ -1128,11 +1094,7 @@ function formatUnit(value: bigint, decimals: number) {
 
 function EmptyState() {
   const { c } = usePoolCopy();
-  return (
-    <div className="rounded-md border border-line bg-surface-soft px-4 py-8 text-center text-sm text-muted">
-      {c.labels.noRecord}
-    </div>
-  );
+  return <div className="py-10 text-center text-muted">{c.labels.noRecord}</div>;
 }
 
 export default function SavingsPoolPage() {
@@ -1142,51 +1104,35 @@ export default function SavingsPoolPage() {
     setMainTab(index);
     setSavingsPoolTab(tabKeys[index] || "pool");
   };
+
   return (
-    <div className="page-grid min-h-screen bg-bg pb-mobile-nav text-ink lg:pb-0">
+    <>
       <Header />
       <MarketTicker />
-      <main className="relative z-10 px-4 py-5">
-        <div className="mx-auto w-full max-w-[540px] space-y-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-accent"
-            aria-label="Back to Home"
-          >
-            ← <span>Back to Home</span>
-          </Link>
-          <section
-            className="rounded-lg border border-line bg-surface p-4 shadow-glow"
-            data-testid="smart-contract-pool"
-          >
-            <div
-              role="tablist"
-              aria-label={c.labels.smartContract}
-              className="flex"
-            >
-              {c.tabs.map((tab, index) => (
-                <MainTab
-                  key={tab}
-                  label={tab}
-                  active={mainTab === index}
-                  onClick={() => changeMainTab(index)}
-                />
-              ))}
-            </div>
-            <div className="mt-4">
-              {mainTab === 0 ? <PoolDataPanel /> : null}
-              {mainTab === 1 ? <PlanPanel /> : null}
-              {mainTab === 2 ? <AccountPanel /> : null}
-              {mainTab === 3 ? <DepositPanel /> : null}
-            </div>
-          </section>
+      <main className="mx-auto max-w-xl px-4 py-6">
+        <Link href="/" className="text-accent text-sm">← Back to Home</Link>
+        <div className="mt-4">
+          <div className="flex gap-2 mb-6">
+            {c.tabs.map((tab, index) => (
+              <MainTab
+                key={tab}
+                label={tab}
+                active={mainTab === index}
+                onClick={() => changeMainTab(index)}
+              />
+            ))}
+          </div>
+
+          {mainTab === 0 ? <PoolDataPanel /> : null}
+          {mainTab === 1 ? <PlanPanel /> : null}
+          {mainTab === 2 ? <AccountPanel /> : null}
+          {mainTab === 3 ? <DepositPanel /> : null}
+
           <PageFooter />
         </div>
       </main>
-      <div className="lg:hidden">
-        <MobileBottomNav />
-      </div>
-    </div>
+      <MobileBottomNav />
+    </>
   );
 }
 
