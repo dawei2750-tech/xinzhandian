@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import Header from '@/components/Header'
 import Sidebar from '@/components/Sidebar'
 import Dashboard from '@/components/Dashboard'
@@ -22,10 +21,9 @@ export default function Home() {
 
   const fetchSystemStatus = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/system/health`
-      )
-      setSystemStatus(response.data)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/system/health`)
+      if (!response.ok) throw new Error(`Health request failed: ${response.status}`)
+      setSystemStatus(await response.json())
     } catch (error) {
       console.error('Failed to fetch system status:', error)
     }
