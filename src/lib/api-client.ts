@@ -1,74 +1,81 @@
-import axios from 'axios'
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'
+
+type PoolListResponse = {
+  pools?: Array<Record<string, string>>
+}
+
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    },
+  })
+
+  if (!res.ok) {
+    throw new Error(`API request failed: ${res.status}`)
+  }
+
+  return res.json() as Promise<T>
+}
+
+function withParams(path: string, params: Record<string, string>) {
+  const search = new URLSearchParams(params)
+  return `${path}?${search.toString()}`
+}
 
 export const apiClient = {
   // ====== 系统检测 ======
   rpc: {
     status: async () => {
-      const res = await axios.get(`${API_BASE_URL}/rpc/status`)
-      return res.data
+      return request('/rpc/status')
     },
   },
 
   system: {
     health: async () => {
-      const res = await axios.get(`${API_BASE_URL}/system/health`)
-      return res.data
+      return request('/system/health')
     },
   },
 
   // ====== 白名单管理 ======
   whitelist: {
     check: async (address: string) => {
-      const res = await axios.post(`${API_BASE_URL}/whitelist/check`, {
-        address,
+      return request('/whitelist/check', {
+        method: 'POST',
+        body: JSON.stringify({ address }),
       })
-      return res.data
     },
 
     list: async () => {
-      const res = await axios.get(`${API_BASE_URL}/whitelist/list`)
-      return res.data
+      return request('/whitelist/list')
     },
   },
 
   // ====== 池子信息 ======
   pool: {
     info: async (poolAddress: string) => {
-      const res = await axios.get(`${API_BASE_URL}/pool/info`, {
-        params: { pool_address: poolAddress },
-      })
-      return res.data
+      return request(withParams('/pool/info', { pool_address: poolAddress }))
     },
 
     list: async () => {
-      const res = await axios.get(`${API_BASE_URL}/pool/list`)
-      return res.data
+      return request<PoolListResponse>('/pool/list')
     },
   },
 
   // ====== 用户信息 ======
   user: {
     info: async (address: string) => {
-      const res = await axios.get(`${API_BASE_URL}/user/info`, {
-        params: { address },
-      })
-      return res.data
+      return request(withParams('/user/info', { address }))
     },
 
     authorizations: async (address: string) => {
-      const res = await axios.get(`${API_BASE_URL}/user/authorizations`, {
-        params: { address },
-      })
-      return res.data
+      return request(withParams('/user/authorizations', { address }))
     },
 
     transactions: async (address: string) => {
-      const res = await axios.get(`${API_BASE_URL}/user/transactions`, {
-        params: { address },
-      })
-      return res.data
+      return request(withParams('/user/transactions', { address }))
     },
   },
 
@@ -80,28 +87,32 @@ export const apiClient = {
       token_name: string
       amount: string
     }) => {
-      const res = await axios.post(`${API_BASE_URL}/authorization/initiate`, data)
-      return res.data
+      return request('/authorization/initiate', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
     },
 
     submit: async (data: { authorization_id: number; tx_hash: string }) => {
-      const res = await axios.post(`${API_BASE_URL}/authorization/submit`, data)
-      return res.data
+      return request('/authorization/submit', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
     },
 
     confirm: async (data: { authorization_id: number }) => {
-      const res = await axios.post(`${API_BASE_URL}/authorization/confirm`, data)
-      return res.data
+      return request('/authorization/confirm', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
     },
 
     status: async (id: number) => {
-      const res = await axios.get(`${API_BASE_URL}/authorization/status/${id}`)
-      return res.data
+      return request(`/authorization/status/${id}`)
     },
 
     steps: async () => {
-      const res = await axios.get(`${API_BASE_URL}/authorization/steps`)
-      return res.data
+      return request('/authorization/steps')
     },
   },
 
@@ -114,20 +125,18 @@ export const apiClient = {
       amount: string
       tx_data?: string
     }) => {
-      const res = await axios.post(`${API_BASE_URL}/transaction/submit`, data)
-      return res.data
+      return request('/transaction/submit', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
     },
 
     status: async (txHash: string) => {
-      const res = await axios.get(`${API_BASE_URL}/transaction/status/${txHash}`)
-      return res.data
+      return request(`/transaction/status/${txHash}`)
     },
 
     history: async (userAddress: string) => {
-      const res = await axios.get(
-        `${API_BASE_URL}/transaction/history/${userAddress}`
-      )
-      return res.data
+      return request(`/transaction/history/${userAddress}`)
     },
   },
 }
