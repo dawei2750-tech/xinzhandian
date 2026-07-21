@@ -21,9 +21,13 @@ const walletDetectors: Array<{
   matches: (provider: InjectedWallet) => boolean;
 }> = [
   { id: "metamask", name: "MetaMask", matches: (provider) => provider.isMetaMask === true },
+  { id: "coinbase", name: "Coinbase Wallet", matches: (provider) => provider.isCoinbaseWallet === true },
   { id: "okx", name: "OKX Wallet", matches: (provider) => provider.isOkxWallet === true || provider.isOKExWallet === true },
   { id: "trust", name: "Trust Wallet", matches: (provider) => provider.isTrust === true || provider.isTrustWallet === true },
+  { id: "bitget", name: "Bitget Wallet", matches: (provider) => provider.isBitKeep === true || provider.isBitget === true },
   { id: "tokenpocket", name: "TokenPocket", matches: (provider) => provider.isTokenPocket === true },
+  { id: "rabby", name: "Rabby Wallet", matches: (provider) => provider.isRabby === true },
+  { id: "binance", name: "Binance Wallet", matches: (provider) => provider.isBinance === true || provider.isBinanceChain === true },
 ];
 
 export function detectEvmWalletProviders(source: unknown): DetectedWalletProvider[] {
@@ -67,13 +71,6 @@ function hasRequest(provider: InjectedWallet): provider is InjectedWallet & Eip1
   return typeof provider.request === "function";
 }
 
-function isUnsupportedInjectedWallet(provider: InjectedWallet) {
-  return (
-    provider.isCoinbaseWallet === true ||
-    provider.isBitKeep === true ||
-    provider.isBitget === true ||
-    provider.isRabby === true ||
-    provider.isBinance === true ||
-    provider.isBinanceChain === true
-  );
+function isUnsupportedInjectedWallet(_provider: InjectedWallet) {
+  return false;
 }

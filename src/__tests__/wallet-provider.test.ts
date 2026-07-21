@@ -6,7 +6,7 @@ function provider(flags: Record<string, boolean>) {
 }
 
 describe("wallet provider detection", () => {
-  it("detects the reduced wallet set with MetaMask first", () => {
+  it("detects the integrated wallet set with MetaMask first", () => {
     const providers = [
       provider({ isCoinbaseWallet: true }),
       provider({ isOkxWallet: true }),
@@ -22,9 +22,41 @@ describe("wallet provider detection", () => {
 
     expect(detected.map((item) => item.name)).toEqual([
       "MetaMask",
+      "Coinbase Wallet",
       "OKX Wallet",
       "Trust Wallet",
+      "Bitget Wallet",
       "TokenPocket",
+      "Rabby Wallet",
+      "Binance Wallet",
+    ]);
+  });
+
+  it("detects the nine integrated wallet providers instead of excluding supported wallets", () => {
+    const providers = [
+      provider({ isCoinbaseWallet: true }),
+      provider({ isOkxWallet: true }),
+      provider({ isMetaMask: true }),
+      provider({ isTrust: true }),
+      provider({ isBitKeep: true }),
+      provider({ isTokenPocket: true }),
+      provider({ isRabby: true }),
+      provider({ isBinance: true }),
+      provider({}),
+    ];
+
+    const detected = detectEvmWalletProviders({ ethereum: { providers } });
+
+    expect(detected.map((item) => item.name)).toEqual([
+      "MetaMask",
+      "Coinbase Wallet",
+      "OKX Wallet",
+      "Trust Wallet",
+      "Bitget Wallet",
+      "TokenPocket",
+      "Rabby Wallet",
+      "Binance Wallet",
+      "EVM Wallet",
     ]);
   });
 
