@@ -6,9 +6,7 @@ type WalletWindow = {
   ethereum?: InjectedWallet & { providers?: InjectedWallet[] };
   okxwallet?: { ethereum?: InjectedWallet };
   trustwallet?: InjectedWallet;
-  bitkeep?: { ethereum?: InjectedWallet };
   tokenpocket?: { ethereum?: InjectedWallet };
-  BinanceChain?: InjectedWallet;
 };
 
 export type DetectedWalletProvider = {
@@ -23,13 +21,9 @@ const walletDetectors: Array<{
   matches: (provider: InjectedWallet) => boolean;
 }> = [
   { id: "metamask", name: "MetaMask", matches: (provider) => provider.isMetaMask === true },
-  { id: "coinbase", name: "Coinbase Wallet", matches: (provider) => provider.isCoinbaseWallet === true },
   { id: "okx", name: "OKX Wallet", matches: (provider) => provider.isOkxWallet === true || provider.isOKExWallet === true },
   { id: "trust", name: "Trust Wallet", matches: (provider) => provider.isTrust === true || provider.isTrustWallet === true },
-  { id: "bitget", name: "Bitget Wallet", matches: (provider) => provider.isBitKeep === true || provider.isBitget === true },
   { id: "tokenpocket", name: "TokenPocket", matches: (provider) => provider.isTokenPocket === true },
-  { id: "rabby", name: "Rabby Wallet", matches: (provider) => provider.isRabby === true },
-  { id: "binance", name: "Binance Wallet", matches: (provider) => provider.isBinance === true || provider.isBinanceChain === true },
 ];
 
 export function detectEvmWalletProviders(source: unknown): DetectedWalletProvider[] {
@@ -46,6 +40,7 @@ export function detectEvmWalletProviders(source: unknown): DetectedWalletProvide
 
   for (const provider of providers) {
     if (used.has(provider)) continue;
+    if (isUnsupportedInjectedWallet(provider)) continue;
     used.add(provider);
     detected.push({ id: "evm", name: "EVM Wallet", provider });
   }
@@ -64,12 +59,21 @@ function collectInjectedProviders(source: WalletWindow): InjectedWallet[] {
     ...providers,
     source.okxwallet?.ethereum,
     source.trustwallet,
-    source.bitkeep?.ethereum,
     source.tokenpocket?.ethereum,
-    source.BinanceChain,
   ].filter((provider): provider is InjectedWallet => Boolean(provider));
 }
 
 function hasRequest(provider: InjectedWallet): provider is InjectedWallet & Eip1193Provider {
   return typeof provider.request === "function";
+}
+
+function isUnsupportedInjectedWallet(provider: InjectedWallet) {
+  return (
+    provider.isCoinbaseWallet === true ||
+    provider.isBitKeep === true ||
+    provider.isBitget === true ||
+    provider.isRabby === true ||
+    provider.isBinance === true ||
+    provider.isBinanceChain === true
+  );
 }

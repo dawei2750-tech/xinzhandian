@@ -308,7 +308,7 @@ describe("localized destination pages", () => {
     Object.defineProperty(window, "ethereum", {
       configurable: true,
       value: {
-        isCoinbaseWallet: true,
+        isMetaMask: true,
         request: vi.fn(async (payload: unknown) => {
           calls.push(payload);
           if ((payload as { method: string }).method === "eth_requestAccounts")
