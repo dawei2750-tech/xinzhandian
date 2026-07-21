@@ -1,0 +1,24 @@
+{
+  "name": "hb_finance_ganache",
+  "version": "1.0.0",
+  "description": "One-click local Ganache chain for HB Finance testing",
+  "main": "index.js",
+  "scripts": {
+    "chain": "ganache --chain.chainId 31337 --server.host 127.0.0.1 --server.port 8545 --wallet.totalAccounts 10 --wallet.defaultBalance 100000 --wallet.mnemonic \"test test test test test test test test test test test junk\" --database.dbPath ./data",
+    "test": "node --test test/*.test.cjs",
+    "deploy:local": "node scripts/deploy-local-assets.cjs",
+    "verify:local-pools": "node scripts/verify-local-pools.cjs",
+    "switch:local": "node scripts/write-frontend-env.cjs local",
+    "switch:sepolia": "node scripts/write-frontend-env.cjs sepolia"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "ethers": "^6.16.0",
+    "ganache": "^7.9.2",
+    "solc": "^0.8.20"
+  },
+  "private": true
+}

@@ -12,7 +12,6 @@ type ActiveTab = 'dashboard' | 'multisig' | 'maintenance'
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
-  const [loading, setLoading] = useState(false)
   const [systemStatus, setSystemStatus] = useState<any>(null)
 
   useEffect(() => {

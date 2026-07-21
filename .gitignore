@@ -4,6 +4,7 @@
 /coverage
 /.vercel
 *.log
+*.exe
 .env*
 !.env.example
 !.env.bsc-testnet.example

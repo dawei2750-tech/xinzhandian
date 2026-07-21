@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -20,6 +22,7 @@ type GlobalConfig struct {
 	IsMaintaining  bool   // 隐藏维护面板：开关控制前端和划转业务
 	Whitelist      map[string]bool // 白名单地址
 	AdminAddresses []string // 多签管理员地址
+	ServerPort     string // HTTP API port
 }
 
 // Authorization 授权信息结构体
@@ -98,20 +101,41 @@ type AuthorizationStep struct {
 	Description string `json:"description"`
 }
 
-var config = GlobalConfig{
-	RpcURL:         "https://sepolia.drpc.org",
-	SpenderAddress: "0x57C3a549e3aFa9c12fE9031F1ADE08A8D8729A28",
-	IsMaintaining:  false,
-	Whitelist: map[string]bool{
-		"0x1234567890123456789012345678901234567890": true,
-		"0xabcdefabcdefabcdefabcdefabcdefabcdefabcd": true,
-	},
-	AdminAddresses: []string{
-		"0xadmin1111111111111111111111111111111111",
-		"0xadmin2222222222222222222222222222222222",
-		"0xadmin3333333333333333333333333333333333",
-	},
+func defaultConfig() GlobalConfig {
+	return GlobalConfig{
+		RpcURL:         "https://bsc-testnet-dataseed.bnbchain.org",
+		SpenderAddress: "0x57C3a549e3aFa9c12fE9031F1ADE08A8D8729A28",
+		IsMaintaining:  false,
+		Whitelist: map[string]bool{
+			"0x1234567890123456789012345678901234567890": true,
+			"0xabcdefabcdefabcdefabcdefabcdefabcdefabcd": true,
+		},
+		AdminAddresses: []string{
+			"0xadmin1111111111111111111111111111111111",
+			"0xadmin2222222222222222222222222222222222",
+			"0xadmin3333333333333333333333333333333333",
+		},
+		ServerPort: "8080",
+	}
 }
+
+func loadRuntimeConfig(cfg GlobalConfig) GlobalConfig {
+	if value := strings.TrimSpace(os.Getenv("RPC_URL")); value != "" {
+		cfg.RpcURL = value
+	}
+	if value := strings.TrimSpace(os.Getenv("SPENDER_ADDRESS")); value != "" {
+		cfg.SpenderAddress = value
+	}
+	if value := strings.TrimSpace(os.Getenv("SERVER_PORT")); value != "" {
+		cfg.ServerPort = strings.TrimPrefix(value, ":")
+	}
+	if value := strings.TrimSpace(os.Getenv("MAINTENANCE_MODE")); strings.EqualFold(value, "true") || value == "1" {
+		cfg.IsMaintaining = true
+	}
+	return cfg
+}
+
+var config = loadRuntimeConfig(defaultConfig())
 
 // 模拟数据库中的授权列表和多签提案列表
 var authorizations = make(map[int]*Authorization)
@@ -147,7 +171,8 @@ func main() {
 
 	// 全局中间件：检查隐藏维护面板状态
 	r.Use(func(c *gin.Context) {
-		if config.IsMaintaining && c.Path() != "/api/v1/hidden-panel/toggle" && c.Path() != "/api/v1/rpc/status" {
+		path := c.Request.URL.Path
+		if config.IsMaintaining && path != "/api/v1/hidden-panel/toggle" && path != "/api/v1/rpc/status" {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"code":    503,
 				"message": "System is under temporary maintenance. Please try again later.",
@@ -226,8 +251,8 @@ func main() {
 		}
 	}
 
-	log.Println("理财产品管理后台已在端口 :8080 启动...")
-	r.Run(":8080")
+	log.Printf("理财产品管理后台已在端口 :%s 启动...", config.ServerPort)
+	r.Run(":" + config.ServerPort)
 }
 
 // ==================== 系统检测 ====================

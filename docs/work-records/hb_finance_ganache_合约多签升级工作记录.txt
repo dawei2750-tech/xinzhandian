@@ -1,0 +1,107 @@
+HB Finance Ganache 合约多签与升级工作记录
+记录时间：2026-07-21 16:19:07 +08:00
+
+一、当前目标
+- 合约管理需要改成多签。
+- 合约还需要有升级逻辑。
+- 测试阶段允许多部署几套合约，后续上线前再筛选。
+- 当前只处理 D:\hb_finance_ganache 的合约和本地部署脚本，不动线上前端和主仓库部署。
+
+二、当前阶段
+- 阶段：开发中，尚未闭环。
+- 已完成：新增多签合约、代理合约、升级基类，开始把核心业务合约改成 initializer + 可升级结构。
+- 未完成：部署脚本还没有改完，Solidity 编译还没有重新跑通，本地部署还没有验证。
+
+三、已新增或修改的主要文件
+- D:\hb_finance_ganache\contracts\SimpleMultiSigAdmin.sol
+  - 新增多签管理合约。
+  - 支持 signer、threshold、propose、approve、execute。
+  - execute 使用 target call 调用目标合约，后续用于执行管理操作和 upgradeTo。
+
+- D:\hb_finance_ganache\contracts\Simple1967Proxy.sol
+  - 新增 ERC1967 风格代理合约。
+  - constructor 写入 implementation slot。
+  - 初始化时 delegatecall initialization。
+  - fallback/receive 通过 delegatecall 转发到 implementation。
+
+- D:\hb_finance_ganache\contracts\UpgradeableAdmin.sol
+  - 新增可升级管理基类。
+  - 提供 admin、initializer、changeAdmin、upgradeTo、upgradeToAndCall、proxiableUUID。
+  - upgradeTo 只能由 admin 调用；最终 admin 应该转给 SimpleMultiSigAdmin。
+
+- D:\hb_finance_ganache\contracts\LedgerV2.sol
+  - 已开始从 constructor 改成 initialize。
+  - usdc 已从 immutable 改成普通 storage，适配代理升级。
+  - 继承 UpgradeableAdmin。
+
+- D:\hb_finance_ganache\contracts\SavingsPoolV1.sol
+  - 已开始从 constructor 改成 initialize。
+  - asset、assetDecimals、ledger、poolType 已从 immutable 改成普通 storage，适配代理升级。
+  - 继承 UpgradeableAdmin。
+
+- D:\hb_finance_ganache\contracts\PoolFactoryV1.sol
+  - 已开始从 constructor 改成 initialize。
+  - ledger 已从 immutable 改成普通 storage。
+  - 新增 poolImplementation。
+  - createFlexiblePool/createFixedPool 已开始改成通过 Simple1967Proxy 创建池子代理。
+
+- D:\hb_finance_ganache\contracts\TestAssetManager.sol
+  - 已开始从 constructor 改成 initialize。
+  - 继承 UpgradeableAdmin。
+
+- D:\hb_finance_ganache\test\multisig-admin.test.cjs
+  - 新增多签结构测试。
+  - 当前有一个正则匹配写得过死，需要改成匹配带 value 的 call。
+
+- D:\hb_finance_ganache\test\upgradeable-proxy.test.cjs
+  - 新增升级结构测试。
+  - 要求存在 Simple1967Proxy、UpgradeableAdmin、initialize、poolImplementation、部署脚本记录 implementation/proxy/multisig。
+
+四、最近一次测试结果
+- 执行命令：
+  npm.cmd test -- test\upgradeable-proxy.test.cjs
+
+- 结果：
+  7 个测试中 5 个通过，2 个失败。
+
+- 失败 1：
+  test\multisig-admin.test.cjs
+  原因：测试要求出现 target.call(data)，但当前合约实际使用 target.call{value: proposal.value}(proposal.data)。
+  判断：这是测试表达需要更新，不是合约方向错误。
+
+- 失败 2：
+  test\upgradeable-proxy.test.cjs
+  原因：scripts\deploy-local-assets.cjs 还没改成部署代理、多签和 implementation 地址。
+  判断：这是预期未完成项。
+
+五、下一步需要做什么
+1. 修 test\multisig-admin.test.cjs 的正则，让它接受带 value 的 call。
+2. 修改 scripts\deploy-local-assets.cjs：
+   - compile() 加入 SimpleMultiSigAdmin.sol、Simple1967Proxy.sol、UpgradeableAdmin.sol。
+   - 部署 SimpleMultiSigAdmin。
+   - 部署 LedgerV2 implementation，再通过 Simple1967Proxy 初始化 Ledger 代理。
+   - 部署 SavingsPoolV1 implementation。
+   - 部署 PoolFactoryV1 implementation，再通过 Simple1967Proxy 初始化 Factory 代理，并传入 poolImplementation。
+   - 部署 TestAssetManager implementation，再通过 Simple1967Proxy 初始化 AssetManager 代理。
+   - record 中同时保存 implementation 地址、proxy 地址、multisigAddress。
+   - env 中继续使用代理地址，不使用 implementation 地址。
+3. 跑 npm.cmd test，修 Solidity 编译错误。
+4. 如果 Ganache 本地链可用，再跑 npm.cmd run deploy:local。
+5. 检查 deployments\local-latest.json 和 env\frontend.local.env，确认前端/后台拿到的是代理地址。
+
+六、还需要的外部信息
+- 多签 signer 地址列表：测试阶段可先用 Ganache 前 3 个账户。
+- requiredApprovals 门槛：测试阶段建议 2/3。
+- BSC 测试网部署前，需要确认最终 signer 地址是否使用项目方钱包地址。
+- BSC 测试网 RPC 可以先用免费节点；正式部署前再换稳定 RPC。
+
+七、风险点
+- 当前合约从 constructor/immutable 改为 initializer/storage，必须重新跑完整测试和部署验证。
+- 代理升级只解决后续升级入口，不能直接升级已经部署的旧 constructor 版本合约。
+- implementation 地址不能给前端使用，前端和后台必须使用 proxy 地址。
+- 多签成为 admin 后，所有管理操作都要通过 propose/approve/execute 执行。
+
+八、当前结论
+- 方向可行。
+- 当前不是完成态，是中间开发态。
+- 预计剩余 30-60 分钟可闭环到本地测试通过和部署脚本可用。

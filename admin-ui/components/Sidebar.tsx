@@ -1,15 +1,19 @@
 'use client'
 
+type ActiveTab = 'dashboard' | 'multisig' | 'maintenance'
+
 interface SidebarProps {
   activeTab: string
-  onTabChange: (tab: any) => void
+  onTabChange: (tab: ActiveTab) => void
 }
 
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8080/api/v1'
+
 export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
-  const menuItems = [
-    { id: 'dashboard', label: '📊 Dashboard', icon: '📊' },
-    { id: 'multisig', label: '🔐 Multi-Sig Panel', icon: '🔐' },
-    { id: 'maintenance', label: '⚙️ Maintenance', icon: '⚙️' },
+  const menuItems: Array<{ id: ActiveTab; label: string; icon: string }> = [
+    { id: 'dashboard', label: 'Dashboard', icon: '[]' },
+    { id: 'multisig', label: 'Multi-Sig Panel', icon: '**' },
+    { id: 'maintenance', label: 'Maintenance', icon: '!!' },
   ]
 
   return (
@@ -25,36 +29,38 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
                 : 'text-slate-700 hover:bg-slate-100'
             }`}
           >
-            <span className="mr-2">{item.icon}</span>
+            <span className="mr-2 font-mono text-xs">{item.icon}</span>
             {item.label}
           </button>
         ))}
       </nav>
 
-      {/* 快速链接 */}
       <div className="px-6 py-4 border-t border-slate-200">
         <p className="text-xs font-semibold text-slate-500 mb-3">Quick Links</p>
         <div className="space-y-2">
           <a
-            href="/api/v1/rpc/status"
+            href={`${apiBaseUrl}/rpc/status`}
             target="_blank"
+            rel="noreferrer"
             className="text-xs text-blue-600 hover:text-blue-800 block"
           >
-            → RPC Status
+            RPC Status
           </a>
           <a
-            href="/api/v1/system/health"
+            href={`${apiBaseUrl}/system/health`}
             target="_blank"
+            rel="noreferrer"
             className="text-xs text-blue-600 hover:text-blue-800 block"
           >
-            → System Health
+            System Health
           </a>
           <a
-            href="/api/v1/multisig/proposals"
+            href={`${apiBaseUrl}/multisig/proposals`}
             target="_blank"
+            rel="noreferrer"
             className="text-xs text-blue-600 hover:text-blue-800 block"
           >
-            → All Proposals
+            All Proposals
           </a>
         </div>
       </div>
